@@ -93,23 +93,28 @@ func groupMsg(message string, groupId int, userId int) {
 		msgData := "当前订阅:\n" +
 			strings.Join(result, "\n")
 		sendMsg(msgData, groupId)
+	case "rss-status":
+		msgData := "正在运行"
+		sendMsg(msgData, groupId)
 	case "rss-help":
 		msgData := "帮助\n" +
 			"rss-all\t查询本群订阅信息\n" +
 			"rss-about\t关于\n" +
+			"rss-status\t运行状态" +
 			"正在开发中的功能:\n" +
 			"rss-init\t注册群信息\n" +
 			"rss-reg --url\t添加订阅\n" +
-			"rss-del --name\t删除订阅\n" +
-			"以及直播订阅功能均在开发中"
+			"rss-del --name\t删除订阅\n"
 		sendMsg(msgData, groupId)
 	case "rss-about":
 		msgData := "关于本插件:\n" +
 			"依托于go-cqhttp运行\n" +
 			"订阅消息来源于:\n" +
 			"https://docs.rsshub.app \n" +
-			"当前版本:DEV20211124\n" +
+			"当前版本:DEV20211125\n" +
 			"有问题请联系[CQ:at,qq=1900097700]"
 		sendMsg(msgData, groupId)
+	default:
+
 	}
 }

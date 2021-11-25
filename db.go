@@ -8,7 +8,6 @@ import (
 )
 
 type groupUrl struct {
-	GroupId   int
 	GroupCode int
 	Url       string
 	UrlName   string
@@ -30,6 +29,7 @@ type Mysql struct {
 type QqBot struct {
 	Url         string `yaml:"url"`
 	AccessToken string `yaml:"access_token"`
+	Port        string `yaml:"port"`
 }
 
 var DB *sql.DB
@@ -51,15 +51,15 @@ func InitDB() *sql.DB {
 	return db
 }
 
-func queryUrl() []string {
+func queryUrl(rssType int) []string {
 	var result []string
-	row, err := DB.Query("select a.GroupId, a.GroupCode, b.Url from group_info as a INNER JOIN url_info as b ON a.GroupId = b.GroupId where a.Status = 1 and b.status = 1")
+	row, err := DB.Query("select a.GroupCode, b.Url from group_info as a INNER JOIN url_info as b ON a.GroupId = b.GroupId inner join rss_type as c on b.RssTypeId = c.RssTypeId where a.Status = 1 and b.status = 1 and c.RssTypeId = ?", rssType)
 	if err != nil {
 		log.Fatal(err)
 	}
 	for row.Next() {
 		var gUrl groupUrl
-		err := row.Scan(&gUrl.GroupId, &gUrl.GroupCode, &gUrl.Url)
+		err := row.Scan(&gUrl.GroupCode, &gUrl.Url)
 		if err != nil {
 			log.Fatal(err)
 		}
