@@ -47,7 +47,7 @@ func InitDB() *sql.DB {
 		log.Fatal(err)
 		return nil
 	}
-	log.Println("Init MySQL Success")
+	log.Println("初始化连接数据库成功")
 	return db
 }
 

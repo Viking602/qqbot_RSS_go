@@ -103,24 +103,27 @@ func sell() {
 				log.Fatalf("解析错误:%v", err.Error())
 			}
 			fp := gofeed.NewParser()
-			feed, rssErr := fp.ParseURL(rssData.Url)
-			if rssErr != nil {
-				log.Fatalf("地址%v，连接错误:%v", rssData.Url, rssErr)
-			}
-			for nm, rssInfo := range feed.Items {
-				if nm == 0 {
-					programTime := reTime(rssInfo.Published)
-					message := feed.Title + "\n" +
-						"标题:" + rssInfo.Title + "\n" +
-						"链接:" + rssInfo.Link + "\n" +
-						"日期:" + programTime
-					tm := time.Now().Unix() - 300
-					nowTime := time.Unix(tm, 0).Format("2006-01-02 15:04:05")
-					if programTime > nowTime {
-						log.Printf("QQ群:%v 开始检查订阅消息，检测到%v发布了一条新消息，发布时间%v触发通知", rssData.GroupCode, feed.Title, programTime)
-						fmt.Println(message, rssData.GroupCode)
-					} else {
-						log.Printf("QQ群:%v 开始检查%v的订阅消息，未检测到新消息，上一条消息发布时间%v", rssData.GroupCode, feed.Title, programTime)
+			rspCode := checkCode(rssData.Url)
+			if rspCode == 200 {
+				feed, rssErr := fp.ParseURL(rssData.Url)
+				if rssErr != nil {
+					log.Fatalf("地址%v，连接错误:%v", rssData.Url, rssErr)
+				}
+				for nm, rssInfo := range feed.Items {
+					if nm == 0 {
+						programTime := reTime(rssInfo.Published)
+						message := feed.Title + "\n" +
+							"标题:" + rssInfo.Title + "\n" +
+							"链接:" + rssInfo.Link + "\n" +
+							"日期:" + programTime
+						tm := time.Now().Unix() - 300
+						nowTime := time.Unix(tm, 0).Format("2006-01-02 15:04:05")
+						if programTime > nowTime {
+							log.Printf("群ID:%v 开始检查订阅消息，检测到%v发布了一条新消息，发布时间%v触发通知", rssData.GroupCode, feed.Title, programTime)
+							sendMsg(message, rssData.GroupCode)
+						} else {
+							log.Printf("群ID:%v 开始检查%v的订阅消息，未检测到新消息，上一条消息发布时间%v", rssData.GroupCode, feed.Title, programTime)
+						}
 					}
 				}
 			}
@@ -139,29 +142,45 @@ func biliLive() {
 				log.Fatalf("解析错误:%v", err.Error())
 			}
 			fp := gofeed.NewParser()
-			feed, rssErr := fp.ParseURL(liveData.Url)
-			if rssErr != nil {
-				log.Fatalf("连接错误:%v", rssErr)
-			}
-			if len(feed.Items) != 0 {
-				for _, liveInfo := range feed.Items {
-					log.Printf("QQ群:%v 检查%v，已开播!开播时间:%v", liveData.GroupCode, feed.Title, reTime(liveInfo.Published))
-					liveTime := reTime(liveInfo.Published)
-					nowTime := time.Unix(time.Now().Unix()-60, 0).Format("2006-01-02 15:04:05")
-					msgData := strings.Split(feed.Title, " ")[0] + "开播啦!\n" +
-						"标题:" + strings.Split(liveInfo.Title, " ")[0] + "\n" +
-						"链接:" + liveInfo.Link + "\n" +
-						"开播时间:" + liveTime
-					if liveTime > nowTime {
-						sendMsg(msgData, liveData.GroupCode)
-					}
+			resCode := checkCode(liveData.Url)
+			if resCode == 200 {
+				feed, rssErr := fp.ParseURL(liveData.Url)
+				if rssErr != nil {
+					log.Fatalf("连接错误:%v", rssErr)
 				}
-			} else {
-				log.Printf("QQ群:%v 检查%v，未开播", liveData.GroupCode, feed.Title)
+				if len(feed.Items) != 0 {
+					for _, liveInfo := range feed.Items {
+						log.Printf("群ID:%v 检查%v，已开播!开播时间:%v", liveData.GroupCode, feed.Title, reTime(liveInfo.Published))
+						liveTime := reTime(liveInfo.Published)
+						nowTime := time.Unix(time.Now().Unix()-300, 0).Format("2006-01-02 15:04:05")
+						msgData := strings.Split(feed.Title, " ")[0] + "开播啦!\n" +
+							"标题:" + strings.Split(liveInfo.Title, " ")[0] + "\n" +
+							"链接:" + liveInfo.Link + "\n" +
+							"开播时间:" + liveTime
+						if liveTime > nowTime {
+							sendMsg(msgData, liveData.GroupCode)
+						}
+					}
+				} else {
+					log.Printf("群ID:%v 检查%v，未开播", liveData.GroupCode, feed.Title)
+				}
 			}
 		}
-		time.Sleep(60 * time.Second)
+		time.Sleep(300 * time.Second)
 	}
+}
+
+func checkCode(uri string) int {
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		log.Fatalf("请求发生异常%v", err)
+	}
+	response, resErr := client.Do(req)
+	if resErr != nil {
+		log.Fatalf("发生异常%v", resErr)
+	}
+	return response.StatusCode
 }
 
 func main() {
