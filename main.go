@@ -66,7 +66,6 @@ func reports(c *gin.Context) {
 				log.Fatalf("序列化私聊消息JSON异常%v:", jsonErr.Error())
 			}
 			fmt.Println(privateData.Message, privateData.Sender.Nickname, privateData.Sender.UserId)
-			fmt.Println(privateData.RawMessage)
 		case "group":
 			group, groupErr := json.Marshal(jsonData)
 			if groupErr != nil {
@@ -94,7 +93,8 @@ func reports(c *gin.Context) {
 }
 
 func sell() {
-	for true {
+	rssTimer := time.Tick(time.Second * 300)
+	for {
 		urlData := queryUrl(1)
 		var rssData groupUrl
 		for _, data := range urlData {
@@ -128,12 +128,13 @@ func sell() {
 				}
 			}
 		}
-		time.Sleep(300 * time.Second)
+		<-rssTimer
 	}
 }
 
 func biliLive() {
-	for true {
+	biliLiveTimer := time.Tick(time.Second * 300)
+	for {
 		urlData := queryUrl(2)
 		var liveData groupUrl
 		for _, data := range urlData {
@@ -166,7 +167,7 @@ func biliLive() {
 				}
 			}
 		}
-		time.Sleep(300 * time.Second)
+		<-biliLiveTimer
 	}
 }
 
@@ -180,6 +181,12 @@ func checkCode(uri string) int {
 	if resErr != nil {
 		log.Fatalf("发生异常%v", resErr)
 	}
+	defer func(Body io.ReadCloser) {
+		closeErr := Body.Close()
+		if closeErr != nil {
+			log.Fatalf("关闭链接时发生异常:%v", closeErr.Error())
+		}
+	}(response.Body)
 	return response.StatusCode
 }
 
