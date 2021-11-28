@@ -93,7 +93,7 @@ func reports(c *gin.Context) {
 }
 
 func sell() {
-	rssTimer := time.Tick(time.Second * 300)
+	rssTimer := time.Tick(time.Second * 600)
 	for {
 		urlData := queryUrl(1)
 		var rssData groupUrl
@@ -116,7 +116,7 @@ func sell() {
 							"标题:" + rssInfo.Title + "\n" +
 							"链接:" + rssInfo.Link + "\n" +
 							"日期:" + programTime
-						tm := time.Now().Unix() - 300
+						tm := time.Now().Unix() - 600
 						nowTime := time.Unix(tm, 0).Format("2006-01-02 15:04:05")
 						if programTime > nowTime {
 							log.Printf("群ID:%v 开始检查订阅消息，检测到%v发布了一条新消息，发布时间%v触发通知", rssData.GroupCode, feed.Title, programTime)
@@ -133,7 +133,7 @@ func sell() {
 }
 
 func biliLive() {
-	biliLiveTimer := time.Tick(time.Second * 300)
+	biliLiveTimer := time.Tick(time.Second * 600)
 	for {
 		urlData := queryUrl(2)
 		var liveData groupUrl
@@ -153,7 +153,7 @@ func biliLive() {
 					for _, liveInfo := range feed.Items {
 						log.Printf("群ID:%v 检查%v，已开播!开播时间:%v", liveData.GroupCode, feed.Title, reTime(liveInfo.Published))
 						liveTime := reTime(liveInfo.Published)
-						nowTime := time.Unix(time.Now().Unix()-300, 0).Format("2006-01-02 15:04:05")
+						nowTime := time.Unix(time.Now().Unix()-600, 0).Format("2006-01-02 15:04:05")
 						msgData := strings.Split(feed.Title, " ")[0] + "开播啦!\n" +
 							"标题:" + strings.Split(liveInfo.Title, " ")[0] + "\n" +
 							"链接:" + liveInfo.Link + "\n" +
