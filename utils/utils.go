@@ -13,16 +13,16 @@ func ReTime(pub string) string {
 }
 
 func CheckCode(uri string) int {
-	client := &http.Client{
-		Timeout: 5 * time.Second,
-	}
+	client := &http.Client{}
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
 		log.Printf("请求发生异常%v", err)
+		return 404
 	}
 	response, resErr := client.Do(req)
 	if resErr != nil {
 		log.Printf("发生异常%v", resErr)
+		return 404
 	}
 	defer func(Body io.ReadCloser) {
 		closeErr := Body.Close()
