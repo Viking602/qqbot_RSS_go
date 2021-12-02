@@ -27,7 +27,7 @@ func InitDB() *sql.DB {
 }
 
 func InsertMsgId(msgInfo string, uri string, groupCode int, botUid int64) {
-	updateExec, err := DB.Exec("update send_info set MsgInfo = ? where Url = ?", msgInfo, uri)
+	updateExec, err := DB.Exec("update send_info as a inner join group_info as b on a.GroupId = b.GroupId inner join bot_info as c on b.BotId = c.BotId set a.MsgInfo = ? where a.Url =? and b.GroupCode = ? and c.BotUid = ?;", msgInfo, uri, groupCode, botUid)
 	if err != nil {
 		log.Printf("更新异常%v:", err.Error())
 	}
