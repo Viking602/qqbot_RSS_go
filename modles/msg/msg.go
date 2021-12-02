@@ -1,10 +1,12 @@
-package main
+package msg
 
-import (
-	"encoding/json"
-	"fmt"
-	"strings"
-)
+type Lifecycle struct {
+	MetaEventType string `json:"meta_event_type"`
+	PostType      string `json:"post_type"`
+	SelfId        int64  `json:"self_id"`
+	SubType       string `json:"sub_type"`
+	Time          int    `json:"time"`
+}
 
 type PrivateMsg struct {
 	Font        int    `json:"font"`
@@ -79,42 +81,30 @@ type LiveEvent struct {
 	Time int `json:"time"`
 }
 
-func groupMsg(message string, groupId int, userId int) {
-	switch message {
-	case "rss-all":
-		groupData := queryGroup(groupId)
-		var urlInfo groupUrl
-		var result []string
-		for _, url := range groupData {
-			_ = json.Unmarshal([]byte(url), &urlInfo)
-			result = append(result, urlInfo.UrlName)
-		}
-		fmt.Println(strings.Join(result, ","))
-		msgData := "当前订阅:\n" +
-			strings.Join(result, "\n")
-		sendMsg(msgData, groupId)
-	case "rss-status":
-		msgData := "正在运行"
-		sendMsg(msgData, groupId)
-	case "rss-help":
-		msgData := "帮助\n" +
-			"rss-all\t查询本群订阅信息\n" +
-			"rss-about\t关于\n" +
-			"rss-status\t运行状态" +
-			"正在开发中的功能:\n" +
-			"rss-init\t注册群信息\n" +
-			"rss-reg --url\t添加订阅\n" +
-			"rss-del --name\t删除订阅\n"
-		sendMsg(msgData, groupId)
-	case "rss-about":
-		msgData := "关于本插件:\n" +
-			"依托于go-cqhttp运行\n" +
-			"订阅消息来源于:\n" +
-			"https://docs.rsshub.app \n" +
-			"当前版本:DEV20211125\n" +
-			"有问题请联系[CQ:at,qq=1900097700]"
-		sendMsg(msgData, groupId)
-	default:
+type ResultMsg struct {
+	Data struct {
+		MessageId int `json:"message_id"`
+	} `json:"data"`
+	Retcode int    `json:"retcode"`
+	Status  string `json:"status"`
+}
 
-	}
+type Msg struct {
+	Data struct {
+		Group       bool   `json:"group"`
+		GroupId     int    `json:"group_id"`
+		Message     string `json:"message"`
+		MessageId   int    `json:"message_id"`
+		MessageIdV2 string `json:"message_id_v2"`
+		MessageSeq  int    `json:"message_seq"`
+		MessageType string `json:"message_type"`
+		RealId      int    `json:"real_id"`
+		Sender      struct {
+			Nickname string `json:"nickname"`
+			UserId   int64  `json:"user_id"`
+		} `json:"sender"`
+		Time int `json:"time"`
+	} `json:"data"`
+	Retcode int    `json:"retcode"`
+	Status  string `json:"status"`
 }
