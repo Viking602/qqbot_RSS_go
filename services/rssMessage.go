@@ -43,14 +43,14 @@ func Sell(botId int64, mt int, ws *websocket.Conn) {
 					if programTime > nowTime {
 						msgData := query.SendInfo(rssData.Url, rssData.GroupCode, botId)
 						if msgData == message {
-							log.Printf("BOTID:%v 群ID:%v %v消息已通知 发布时间%v", botId, rssData.GroupCode, feed.Title, programTime)
+							log.Printf("BOT:%v 群ID:%v %v消息已通知 发布时间%v", botId, rssData.GroupCode, feed.Title, programTime)
 						} else {
-							log.Printf("BOTID:%v 群ID:%v 开始检查订阅消息，检测到%v发布了一条新消息，发布时间%v触发通知", botId, rssData.GroupCode, feed.Title, programTime)
+							log.Printf("BOT:%v 群ID:%v 开始检查订阅消息，检测到%v发布了一条新消息，发布时间%v触发通知", botId, rssData.GroupCode, feed.Title, programTime)
 							db.InsertMsgId(message, rssData.Url, rssData.GroupCode, botId)
 							bot.SendGroupMessageSocket(rssData.GroupCode, message, mt, ws)
 						}
 					} else {
-						log.Printf("BOTID:%v 群ID:%v 开始检查%v的订阅消息，未检测到新消息，上一条消息发布时间%v", botId, rssData.GroupCode, feed.Title, programTime)
+						log.Printf("BOT:%v 群ID:%v 开始检查%v的订阅消息，未检测到新消息，上一条消息发布时间%v", botId, rssData.GroupCode, feed.Title, programTime)
 					}
 				}
 			}
@@ -85,9 +85,9 @@ func BiliLive(botId int64, mt int, ws *websocket.Conn) {
 					if liveTime > nowTime {
 						liveMsg := query.SendInfo(liveData.Url, liveData.GroupCode, botId)
 						if liveMsg == msgData {
-							log.Printf("BOTID:%v 群ID:%v 开播消息已通知", botId, liveData.GroupCode)
+							log.Printf("BOT:%v 群ID:%v 开播消息已通知", botId, liveData.GroupCode)
 						} else {
-							log.Printf("BOTID:%v 群ID:%v 推送%v开播消息 开播时间:%v", botId, liveData.GroupCode, feed.Title, liveTime)
+							log.Printf("BOT:%v 群ID:%v 推送%v开播消息 开播时间:%v", botId, liveData.GroupCode, feed.Title, liveTime)
 							db.InsertMsgId(msgData, liveData.Url, liveData.GroupCode, botId)
 							bot.SendGroupMessageSocket(liveData.GroupCode, msgData, mt, ws)
 						}
@@ -129,24 +129,22 @@ func NewBilLive(botUid int64, ws *websocket.Conn, mt int) {
 					return
 				}
 				liveMsg := query.SendInfo(upInfo.Data.LiveRoom.Url, roomCode.GroupCode, botUid)
-				message := `我是本群开播小助手！` + upInfo.Data.Name + `开播啦！\n` +
+				message := `我是本群开播小助手！\n` + upInfo.Data.Name + `开播啦！\n` +
 					`标题:` + room.Data.Title + `\n` +
 					`分区:` + room.Data.AreaName + `\n` +
-					`[CQ:image,file=` + upInfo.Data.LiveRoom.Cover + `]` + `\n` +
 					`链接` + upInfo.Data.LiveRoom.Url + `\n` +
 					`开播时间:` + room.Data.LiveTime
 				if liveMsg == message {
-					log.Printf("BOT:%v 群ID%v 直播间:%v开播消息已通知", botUid, roomCode.GroupCode, room.Data.RoomId)
+					log.Printf("BOT:%v 群ID:%v 直播间ID:%v开播消息已通知", botUid, roomCode.GroupCode, room.Data.RoomId)
 				} else {
 					db.InsertMsgId(message, upInfo.Data.LiveRoom.Url, roomCode.GroupCode, botUid)
-					bot.SendGroupMessageSocket(roomCode.GroupCode, message, mt, ws)
+					bot.SendGroupMessageSocket(roomCode.GroupCode, message+`\n[CQ:image,file=`+upInfo.Data.LiveRoom.Cover+`]`, mt, ws)
 				}
 			} else {
-				log.Printf("BOT:%v 群ID%v 直播间:%v已开播", botUid, roomCode.GroupCode, room.Data.RoomId)
+				log.Printf("BOT:%v 群ID:%v 直播间ID:%v已开播", botUid, roomCode.GroupCode, room.Data.RoomId)
 			}
-
 		} else {
-			log.Printf("BOT:%v 群ID%v 直播间ID:%v未开播", botUid, roomCode.GroupCode, room.Data.RoomId)
+			log.Printf("BOT:%v 群ID:%v 直播间ID:%v未开播", botUid, roomCode.GroupCode, room.Data.RoomId)
 		}
 	}
 }
