@@ -23,18 +23,18 @@ var upGrader = websocket.Upgrader{
 func socket(c *gin.Context) {
 	ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
-		fmt.Println("1", err)
+		log.Printf("连接异常:%v", err)
 		return
 	}
 	defer func(ws *websocket.Conn) {
 		closeErr := ws.Close()
 		if err != nil {
-			fmt.Printf("关闭连接发生异常:%v", closeErr.Error())
+			log.Printf("关闭连接发生异常:%v", closeErr.Error())
 		}
 	}(ws)
 	for {
 		mt, message, msgErr := ws.ReadMessage()
-		fmt.Println(string(message))
+		log.Printf("Socket消息:%v", string(message))
 		if msgErr != nil {
 			log.Printf("连接地址%v 已断开:%v", ws.RemoteAddr(), msgErr)
 			break
@@ -44,6 +44,7 @@ func socket(c *gin.Context) {
 		dataErr := json.Unmarshal(message, &data)
 		if dataErr != nil {
 			log.Printf("序列化JSON异常:%v", dataErr)
+			break
 		}
 		//获取消息ID
 		//msgData, msgErr := json.Marshal(data)
@@ -79,7 +80,8 @@ func socket(c *gin.Context) {
 					log.Printf("Error:%v", UnErr.Error())
 				}
 				go services.Sell(botInfo.SelfId, mt, ws)
-				go services.BiliLive(botInfo.SelfId, mt, ws)
+				//go services.BiliLive(botInfo.SelfId, mt, ws)
+				go services.NewBilLive(botInfo.SelfId, ws, mt)
 			case "lifecycle":
 				var lifecycle msg.Lifecycle
 				lifecycleErr := json.Unmarshal(message, &lifecycle)

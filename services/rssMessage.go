@@ -7,8 +7,11 @@ import (
 	"log"
 	"qqbot-RSS-go/bot"
 	"qqbot-RSS-go/db"
+	"qqbot-RSS-go/modles/msg"
 	"qqbot-RSS-go/modles/query"
+	"qqbot-RSS-go/services/bilibili"
 	"qqbot-RSS-go/utils"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -40,14 +43,14 @@ func Sell(botId int64, mt int, ws *websocket.Conn) {
 					if programTime > nowTime {
 						msgData := query.SendInfo(rssData.Url, rssData.GroupCode, botId)
 						if msgData == message {
-							log.Printf("机器人ID:%v 群ID:%v %v消息已通知 发布时间%v", botId, rssData.GroupCode, feed.Title, programTime)
+							log.Printf("BOTID:%v 群ID:%v %v消息已通知 发布时间%v", botId, rssData.GroupCode, feed.Title, programTime)
 						} else {
-							log.Printf("机器人ID:%v 群ID:%v 开始检查订阅消息，检测到%v发布了一条新消息，发布时间%v触发通知", botId, rssData.GroupCode, feed.Title, programTime)
+							log.Printf("BOTID:%v 群ID:%v 开始检查订阅消息，检测到%v发布了一条新消息，发布时间%v触发通知", botId, rssData.GroupCode, feed.Title, programTime)
 							db.InsertMsgId(message, rssData.Url, rssData.GroupCode, botId)
 							bot.SendGroupMessageSocket(rssData.GroupCode, message, mt, ws)
 						}
 					} else {
-						log.Printf("机器人ID:%v 群ID:%v 开始检查%v的订阅消息，未检测到新消息，上一条消息发布时间%v", botId, rssData.GroupCode, feed.Title, programTime)
+						log.Printf("BOTID:%v 群ID:%v 开始检查%v的订阅消息，未检测到新消息，上一条消息发布时间%v", botId, rssData.GroupCode, feed.Title, programTime)
 					}
 				}
 			}
@@ -82,17 +85,68 @@ func BiliLive(botId int64, mt int, ws *websocket.Conn) {
 					if liveTime > nowTime {
 						liveMsg := query.SendInfo(liveData.Url, liveData.GroupCode, botId)
 						if liveMsg == msgData {
-							log.Printf("机器人ID:%v 群ID:%v 开播消息已通知", botId, liveData.GroupCode)
+							log.Printf("BOTID:%v 群ID:%v 开播消息已通知", botId, liveData.GroupCode)
 						} else {
-							log.Printf("机器人ID:%v 群ID:%v 推送%v开播消息 开播时间:%v", botId, liveData.GroupCode, feed.Title, liveTime)
+							log.Printf("BOTID:%v 群ID:%v 推送%v开播消息 开播时间:%v", botId, liveData.GroupCode, feed.Title, liveTime)
 							db.InsertMsgId(msgData, liveData.Url, liveData.GroupCode, botId)
 							bot.SendGroupMessageSocket(liveData.GroupCode, msgData, mt, ws)
 						}
 					}
 				}
 			} else {
-				log.Printf("机器人ID:%v 群ID:%v 检查%v，未开播", botId, liveData.GroupCode, feed.Title)
+				log.Printf("BOTID:%v 群ID:%v 检查%v，未开播", botId, liveData.GroupCode, feed.Title)
 			}
+		}
+	}
+}
+
+func NewBilLive(botUid int64, ws *websocket.Conn, mt int) {
+	data := query.GetRoomCode(botUid)
+	var roomCode query.RoomInfo
+	for _, roomData := range data {
+		roomCodeErr := json.Unmarshal([]byte(roomData), &roomCode)
+		if roomCodeErr != nil {
+			log.Printf("发生异常:%v", roomCodeErr)
+			return
+		}
+		roomInfo := bilibili.LiveInfo(roomCode.RoomCode)
+		var room msg.BiliLiveInfo
+		err := json.Unmarshal(roomInfo, &room)
+		if err != nil {
+			log.Printf("序列化JSON发生异常:%v", err.Error())
+			log.Printf("参数返回:%v", roomData)
+			return
+		}
+		if room.Data.LiveStatus == 1 {
+			nowTime := time.Unix(time.Now().Unix()-600, 0).Format("2006-01-02 15:04:05")
+			if room.Data.LiveTime > nowTime {
+				upData := bilibili.GetUpInfo(strconv.Itoa(room.Data.Uid))
+				var upInfo msg.UpInfo
+				upJsonErr := json.Unmarshal(upData, &upInfo)
+				if upJsonErr != nil {
+					log.Printf("发生异常:%v", upJsonErr.Error())
+					log.Printf("参数返回:%v", upData)
+					return
+				}
+				liveMsg := query.SendInfo(upInfo.Data.LiveRoom.Url, roomCode.GroupCode, botUid)
+				message := `我是本群开播小助手！` + upInfo.Data.Name + `开播啦！\n` +
+					`标题:` + room.Data.Title + `\n` +
+					`分区:` + room.Data.AreaName + `\n` +
+					`[CQ:image,file=` + upInfo.Data.LiveRoom.Cover + `]` + `\n` +
+					`链接` + upInfo.Data.LiveRoom.Url + `\n` +
+					`开播时间:` + room.Data.LiveTime
+				if liveMsg == message {
+					log.Printf("BOT:%v 群ID%v 直播间:%v开播消息已通知", botUid, roomCode.GroupCode, room.Data.RoomId)
+				} else {
+					db.InsertMsgId(message, upInfo.Data.LiveRoom.Url, roomCode.GroupCode, botUid)
+					bot.SendGroupMessageSocket(roomCode.GroupCode, message, mt, ws)
+				}
+			} else {
+				log.Printf("BOT:%v 群ID%v 直播间:%v已开播", botUid, roomCode.GroupCode, room.Data.RoomId)
+			}
+
+		} else {
+			log.Printf("BOT:%v 群ID%v 直播间ID:%v未开播", botUid, roomCode.GroupCode, room.Data.RoomId)
 		}
 	}
 }

@@ -16,6 +16,11 @@ type MsgInfo struct {
 	Info string
 }
 
+type RoomInfo struct {
+	RoomCode  string
+	GroupCode int
+}
+
 func Url(rssType int, userId int64) []string {
 	var result []string
 	row, err := db.DB.Query("select a.GroupCode, b.Url from group_info as a INNER JOIN url_info as b ON a.GroupId = b.GroupId inner join rss_type as c on b.RssTypeId = c.RssTypeId inner join bot_info as d on a.BotId = d.BotId where a.Status = 1 and b.status = 1 and d.Status = 1 and c.RssTypeId = ? and d.BotUid = ? and b.BotId = d.BotId", rssType, userId)
@@ -61,4 +66,23 @@ func SendInfo(uri string, groupCode int, botUid int64) string {
 		log.Println(err)
 	}
 	return msg.Info
+}
+
+func GetRoomCode(botUid int64) []string {
+	var result []string
+	row, err := db.DB.Query("select RoomCode,c.GroupCode from room_info as a inner join bot_info as b on a.BotId = b.BotId inner join group_info as c on a.GroupId = c.GroupId where b.BotUid = ? and RssTypeId = 2", botUid)
+	if err != nil {
+		log.Printf("查询房间号时出现异常:%v:", err.Error())
+		return nil
+	}
+	for row.Next() {
+		var room RoomInfo
+		err := row.Scan(&room.RoomCode, &room.GroupCode)
+		if err != nil {
+			log.Printf("查询房间号时出现异常:%v", err.Error())
+		}
+		dict, _ := json.Marshal(room)
+		result = append(result, string(dict))
+	}
+	return result
 }
