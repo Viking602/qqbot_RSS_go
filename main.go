@@ -80,7 +80,6 @@ func socket(c *gin.Context) {
 					log.Printf("Error:%v", UnErr.Error())
 				}
 				go services.Sell(botInfo.SelfId, mt, ws)
-				//go services.BiliLive(botInfo.SelfId, mt, ws)
 				go services.NewBilLive(botInfo.SelfId, ws, mt)
 			case "lifecycle":
 				var lifecycle msg.Lifecycle

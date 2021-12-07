@@ -42,3 +42,35 @@ func InsertMsgId(msgInfo string, uri string, groupCode int, botUid int64) {
 		}
 	}
 }
+
+func InsertUrl(uri string, uriName string, botUid int64, groupId int) bool {
+	InsertExec, err := DB.Exec("insert into url_info (url, urlname, status, groupid, botid, createdatetime, rsstypeid)SELECT ?, ?, 1, groupId, bi.BotId, now(), 1 from group_info as gi , bot_info as bi where bi.BotUid = ? and gi.GroupCode = ? and gi.BotId = bi.BotId and not exists(select 1 from url_info as ui where ui.GroupId = gi.GroupId and ui.BotId = bi.BotId and ui.Url =?)", uri, uriName, botUid, groupId, uri)
+	if err != nil {
+		log.Printf("发生异常:%v", err.Error())
+	}
+	affected, err := InsertExec.RowsAffected()
+	if err != nil {
+		log.Printf("获取执行结果异常:%v", err.Error())
+	}
+	if affected == 1 {
+		return true
+	} else {
+		return false
+	}
+}
+
+func InsertRoom(roomCode int, roomName string, botUid int64, groupId int) bool {
+	InsertExec, err := DB.Exec("insert into room_info (roomcode, botid, groupid, rsstypeid, status, createdatetime, roomname)SELECT ?,bi.botid, gi.groupid, 2, 1, now(), ? from bot_info as bi, group_info as gi where bi.BotUid = ? and gi.GroupCode = ? and gi.BotId = bi.BotId and not exists(select 1 from room_info as ri where ri.GroupId = gi.GroupId and ri.BotId = bi.BotId and ri.RoomCode = ? )", roomCode, roomName, botUid, groupId, roomCode)
+	if err != nil {
+		log.Printf("发生异常:%v", err.Error())
+	}
+	affected, err := InsertExec.RowsAffected()
+	if err != nil {
+		log.Printf("获取执行结果异常:%v", err.Error())
+	}
+	if affected == 1 {
+		return true
+	} else {
+		return false
+	}
+}

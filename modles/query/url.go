@@ -16,6 +16,10 @@ type MsgInfo struct {
 	Info string
 }
 
+type RoomName struct {
+	RoomName string
+}
+
 type RoomInfo struct {
 	RoomCode  string
 	GroupCode int
@@ -53,6 +57,25 @@ func Group(groupId int, botUid int64) []string {
 			log.Println(err)
 		}
 		dict, _ := json.Marshal(gUrl)
+		data := string(dict)
+		result = append(result, data)
+	}
+	return result
+}
+
+func LiveGroup(groupId int, botUid int64) []string {
+	var result []string
+	row, err := db.DB.Query("select RoomName from room_info as ri inner join bot_info bi on ri.BotId = bi.BotId inner join group_info gi on bi.BotId = gi.BotId where bi.BotUid = ? and gi.GroupCode = ? and ri.Status = 1 and gi.Status = 1 and bi.Status = 1 and ri.GroupId = gi.GroupId", botUid, groupId)
+	if err != nil {
+		log.Println(err)
+	}
+	for row.Next() {
+		var roomName RoomName
+		err := row.Scan(&roomName.RoomName)
+		if err != nil {
+			log.Println(err)
+		}
+		dict, _ := json.Marshal(roomName)
 		data := string(dict)
 		result = append(result, data)
 	}
