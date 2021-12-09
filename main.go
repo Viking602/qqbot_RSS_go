@@ -68,7 +68,7 @@ func socket(c *gin.Context) {
 				if groupMsgErr != nil {
 					log.Printf("解析群消息异常:%v", groupMsgErr)
 				}
-				go services.GroupMsg(groupMsg.Message, groupMsg.GroupId, groupMsg.SelfId, ws, mt)
+				go services.GroupMsg(groupMsg.Message, groupMsg.GroupId, groupMsg.SelfId, groupMsg.Sender.UserId, ws, mt)
 			}
 		case "meta_event":
 			metaEventType := data["meta_event_type"]

@@ -43,8 +43,8 @@ func InsertMsgId(msgInfo string, uri string, groupCode int, botUid int64) {
 	}
 }
 
-func InsertUrl(uri string, uriName string, botUid int64, groupId int) bool {
-	InsertExec, err := DB.Exec("insert into url_info (url, urlname, status, groupid, botid, createdatetime, rsstypeid)SELECT ?, ?, 1, groupId, bi.BotId, now(), 1 from group_info as gi , bot_info as bi where bi.BotUid = ? and gi.GroupCode = ? and gi.BotId = bi.BotId and not exists(select 1 from url_info as ui where ui.GroupId = gi.GroupId and ui.BotId = bi.BotId and ui.Url =?)", uri, uriName, botUid, groupId, uri)
+func InsertUrl(uri string, uriName string, botUid int64, groupId int, userId int) bool {
+	InsertExec, err := DB.Exec("insert into url_info (url, urlname, status, groupid, botid, createdatetime, rsstypeid, CreateUserId)SELECT ?, ?, 1, groupId, bi.BotId, now(), 1, ? from group_info as gi , bot_info as bi where bi.BotUid = ? and gi.GroupCode = ? and gi.BotId = bi.BotId and not exists(select 1 from url_info as ui where ui.GroupId = gi.GroupId and ui.BotId = bi.BotId and ui.Url =?)", uri, uriName, userId, botUid, groupId, uri)
 	if err != nil {
 		log.Printf("发生异常:%v", err.Error())
 	}
@@ -59,12 +59,44 @@ func InsertUrl(uri string, uriName string, botUid int64, groupId int) bool {
 	}
 }
 
-func InsertRoom(roomCode int, roomName string, botUid int64, groupId int) bool {
-	InsertExec, err := DB.Exec("insert into room_info (roomcode, botid, groupid, rsstypeid, status, createdatetime, roomname)SELECT ?,bi.botid, gi.groupid, 2, 1, now(), ? from bot_info as bi, group_info as gi where bi.BotUid = ? and gi.GroupCode = ? and gi.BotId = bi.BotId and not exists(select 1 from room_info as ri where ri.GroupId = gi.GroupId and ri.BotId = bi.BotId and ri.RoomCode = ? )", roomCode, roomName, botUid, groupId, roomCode)
+func InsertRoom(roomCode int, roomName string, botUid int64, groupId int, userId int) bool {
+	InsertExec, err := DB.Exec("insert into room_info (roomcode, botid, groupid, rsstypeid, status, createdatetime, roomname, CreateUserId)SELECT ?,bi.botid, gi.groupid, 2, 1, now(), ?, ? from bot_info as bi, group_info as gi where bi.BotUid = ? and gi.GroupCode = ? and gi.BotId = bi.BotId and not exists(select 1 from room_info as ri where ri.GroupId = gi.GroupId and ri.BotId = bi.BotId and ri.RoomCode = ? )", roomCode, roomName, userId, botUid, groupId, roomCode)
 	if err != nil {
 		log.Printf("发生异常:%v", err.Error())
 	}
 	affected, err := InsertExec.RowsAffected()
+	if err != nil {
+		log.Printf("获取执行结果异常:%v", err.Error())
+	}
+	if affected == 1 {
+		return true
+	} else {
+		return false
+	}
+}
+
+func DelRss(botUid int64, groupId int, urlName string, createUserId int) bool {
+	DelExec, err := DB.Exec("delete ui from url_info as ui inner join bot_info bi on ui.BotId = bi.BotId inner join group_info gi on bi.BotId = gi.BotId where bi.BotUid = ? and gi.GroupCode = ? and ui.UrlName = ? and ui.CreateUserId = ? and ui.GroupId = gi.GroupId", botUid, groupId, urlName, createUserId)
+	if err != nil {
+		log.Printf("发生异常:%v", err.Error())
+	}
+	affected, err := DelExec.RowsAffected()
+	if err != nil {
+		log.Printf("获取执行结果异常:%v", err.Error())
+	}
+	if affected == 1 {
+		return true
+	} else {
+		return false
+	}
+}
+
+func DelLive(botUid int64, groupId int, roomCode string, createUserId int) bool {
+	DelExec, err := DB.Exec("delete ri from room_info as ri inner join bot_info bi on ri.BotId = bi.BotId inner join group_info gi on bi.BotId = gi.BotId where bi.BotUid = ? and gi.GroupCode = ? and ri.RoomCode = ? and ri.CreateUserId = ? and ri.GroupId = gi.GroupId", botUid, groupId, roomCode, createUserId)
+	if err != nil {
+		log.Printf("发生异常:%v", err.Error())
+	}
+	affected, err := DelExec.RowsAffected()
 	if err != nil {
 		log.Printf("获取执行结果异常:%v", err.Error())
 	}
