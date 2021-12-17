@@ -6,6 +6,7 @@ import (
 	"qqbot-RSS-go/bot"
 	"qqbot-RSS-go/bot/handlers"
 	"qqbot-RSS-go/modles/query"
+	"strconv"
 	"strings"
 )
 
@@ -66,5 +67,11 @@ func GroupMsg(message string, groupId int, botUid int64, userId int, ws *websock
 		roomCode := strings.Replace(message, "rss-live-del ", "", 1)
 		data := handlers.CommandDelLive(botUid, groupId, roomCode, userId)
 		bot.SendGroupMessageSocket(groupId, data, mt, ws)
+	case "[CQ:at,qq=" + strconv.FormatInt(botUid, 10) + "]":
+		imgUrl := strings.Replace(message, "[CQ:at,qq="+strconv.FormatInt(botUid, 10)+"]", "", 1)
+		uri := strings.Split(imgUrl, ",")[2]
+		result := handlers.CommandNAO(strings.Replace(uri, "url=", "", 1))
+		data := strings.Join(result, "")
+		bot.SendGroupMessageSocket(groupId, `已为您搜索到以下图片:`+data, mt, ws)
 	}
 }

@@ -303,3 +303,310 @@ type UpInfo struct {
 		} `json:"series"`
 	} `json:"data"`
 }
+
+type SauceNAO struct {
+	Header struct {
+		UserId           string `json:"user_id"`
+		AccountType      string `json:"account_type"`
+		ShortLimit       string `json:"short_limit"`
+		LongLimit        string `json:"long_limit"`
+		LongRemaining    int    `json:"long_remaining"`
+		ShortRemaining   int    `json:"short_remaining"`
+		Status           int    `json:"status"`
+		ResultsRequested int    `json:"results_requested"`
+		Index            struct {
+			Field1 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"0"`
+			Field2 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"2"`
+			Field3 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"5"`
+			Field4 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"6"`
+			Field5 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"8"`
+			Field6 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"9"`
+			Field7 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"10"`
+			Field8 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"11"`
+			Field9 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"12"`
+			Field10 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"16"`
+			Field11 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"18"`
+			Field12 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"19"`
+			Field13 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"20"`
+			Field14 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"21"`
+			Field15 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"22"`
+			Field16 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"23"`
+			Field17 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"24"`
+			Field18 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"25"`
+			Field19 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"26"`
+			Field20 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"27"`
+			Field21 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"28"`
+			Field22 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"29"`
+			Field23 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"30"`
+			Field24 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"31"`
+			Field25 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"32"`
+			Field26 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"33"`
+			Field27 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"34"`
+			Field28 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"35"`
+			Field29 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"36"`
+			Field30 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"37"`
+			Field31 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"38"`
+			Field32 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"39"`
+			Field33 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"40"`
+			Field34 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"41"`
+			Field35 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"42"`
+			Field36 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"51"`
+			Field37 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"52"`
+			Field38 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"53"`
+			Field39 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"211"`
+			Field40 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"341"`
+			Field41 struct {
+				Status   int `json:"status"`
+				ParentId int `json:"parent_id"`
+				Id       int `json:"id"`
+				Results  int `json:"results"`
+			} `json:"371"`
+		} `json:"index"`
+		SearchDepth       string  `json:"search_depth"`
+		MinimumSimilarity float64 `json:"minimum_similarity"`
+		QueryImageDisplay string  `json:"query_image_display"`
+		QueryImage        string  `json:"query_image"`
+		ResultsReturned   int     `json:"results_returned"`
+	} `json:"header"`
+	Results []struct {
+		Header struct {
+			Similarity string `json:"similarity"`
+			Thumbnail  string `json:"thumbnail"`
+			IndexId    int    `json:"index_id"`
+			IndexName  string `json:"index_name"`
+			Dupes      int    `json:"dupes"`
+			Hidden     int    `json:"hidden"`
+		} `json:"header"`
+		Data struct {
+			ExtUrls         []string    `json:"ext_urls,omitempty"`
+			Title           string      `json:"title,omitempty"`
+			PixivId         int         `json:"pixiv_id,omitempty"`
+			MemberName      string      `json:"member_name,omitempty"`
+			MemberId        int         `json:"member_id,omitempty"`
+			DanbooruId      int         `json:"danbooru_id,omitempty"`
+			GelbooruId      int         `json:"gelbooru_id,omitempty"`
+			AnimePicturesId int         `json:"anime-pictures_id,omitempty"`
+			Creator         interface{} `json:"creator,omitempty"`
+			Material        string      `json:"material,omitempty"`
+			Characters      string      `json:"characters,omitempty"`
+			Source          string      `json:"source,omitempty"`
+			EngName         string      `json:"eng_name,omitempty"`
+			JpName          string      `json:"jp_name,omitempty"`
+			DaId            string      `json:"da_id,omitempty"`
+			AuthorName      string      `json:"author_name,omitempty"`
+			AuthorUrl       string      `json:"author_url,omitempty"`
+			SeigaId         int         `json:"seiga_id,omitempty"`
+			FaId            int         `json:"fa_id,omitempty"`
+			AsProject       string      `json:"as_project,omitempty"`
+			NijieId         int         `json:"nijie_id,omitempty"`
+			AnidbAid        int         `json:"anidb_aid,omitempty"`
+			MalId           int         `json:"mal_id,omitempty"`
+			AnilistId       int         `json:"anilist_id,omitempty"`
+			Part            string      `json:"part,omitempty"`
+			Year            string      `json:"year,omitempty"`
+			EstTime         string      `json:"est_time,omitempty"`
+			ImdbId          string      `json:"imdb_id,omitempty"`
+			SankakuId       int         `json:"sankaku_id,omitempty"`
+		} `json:"data"`
+	} `json:"results"`
+}

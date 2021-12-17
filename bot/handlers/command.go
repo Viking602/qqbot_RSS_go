@@ -8,6 +8,7 @@ import (
 	"qqbot-RSS-go/db"
 	"qqbot-RSS-go/modles/msg"
 	"qqbot-RSS-go/services/bilibili"
+	"qqbot-RSS-go/services/img"
 	"qqbot-RSS-go/utils"
 	"strconv"
 )
@@ -88,4 +89,26 @@ func CommandDelLive(botUid int64, groupId int, roomCode string, createUserId int
 	} else {
 		return "使用方法:rss-live-del bilibili直播房间号"
 	}
+}
+
+func CommandNAO(url string) []string {
+	data := img.SauceNAO(url)
+	var saucenao msg.SauceNAO
+	err := json.Unmarshal(data, &saucenao)
+	if err != nil {
+		log.Printf("发生异常:%v", err.Error())
+	}
+	var result []string
+	for _, imgs := range saucenao.Results {
+		msgData := `[CQ:image,file=` + imgs.Header.Thumbnail + `]\n` +
+			`相似度:` + imgs.Header.Similarity + `\n` +
+			`标题:` + imgs.Data.Title + `\n` +
+			`链接:`
+		result = append(result, msgData)
+		for _, i := range imgs.Data.ExtUrls {
+			result = append(result, i)
+			break
+		}
+	}
+	return result
 }
