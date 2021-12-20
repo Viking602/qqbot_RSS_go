@@ -2,9 +2,8 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/mmcdole/gofeed"
-	"log"
+	"github.com/sirupsen/logrus"
 	"qqbot-RSS-go/db"
 	"qqbot-RSS-go/modles/msg"
 	"qqbot-RSS-go/services/bilibili"
@@ -20,7 +19,7 @@ func CommandAddRss(uri string, botUid int64, groupId int, userId int) string {
 		if rspCode == 200 {
 			feed, rssErr := fp.ParseURL(uri)
 			if rssErr != nil {
-				log.Printf("非法RSS格式:%v", rssErr.Error())
+				logrus.Error("非法RSS格式:%v", rssErr.Error())
 				return "非法RSS格式"
 			}
 			result := db.InsertUrl(uri, feed.Title, botUid, groupId, userId)
@@ -41,17 +40,16 @@ func CommandAddLive(roomCode string, botUid int64, groupId int, userId int) stri
 	if roomCode != "rss-live" && roomCode != "" {
 		roomInfo := bilibili.LiveInfo(roomCode)
 		var room msg.BiliLiveInfo
-		fmt.Println(room.Code)
 		err := json.Unmarshal(roomInfo, &room)
 		if err != nil {
-			log.Printf("序列化JSON发生异常:%v", err.Error())
+			logrus.Error("序列化JSON发生异常:%v", err.Error())
 			return "房间号码错误"
 		}
 		upData := bilibili.GetUpInfo(strconv.Itoa(room.Data.Uid))
 		var upInfo msg.UpInfo
 		err = json.Unmarshal(upData, &upInfo)
 		if err != nil {
-			log.Printf("序列化JSON发生异常:%v", err.Error())
+			logrus.Error("序列化JSON发生异常:%v", err.Error())
 			return "用户信息错误"
 		}
 		result := db.InsertRoom(room.Data.RoomId, upInfo.Data.Name, botUid, groupId, userId)
@@ -96,7 +94,7 @@ func CommandNAO(url string) []string {
 	var saucenao msg.SauceNAO
 	err := json.Unmarshal(data, &saucenao)
 	if err != nil {
-		log.Printf("发生异常:%v", err.Error())
+		logrus.Error("发生异常:%v", err.Error())
 	}
 	var result []string
 	for _, imgs := range saucenao.Results {

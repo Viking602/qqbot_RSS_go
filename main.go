@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/websocket"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"qqbot-RSS-go/db"
 	"qqbot-RSS-go/modles/config"
@@ -23,27 +23,27 @@ var upGrader = websocket.Upgrader{
 func socket(c *gin.Context) {
 	ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
-		log.Printf("连接异常:%v", err)
+		log.Errorf("连接异常:%v", err)
 		return
 	}
 	defer func(ws *websocket.Conn) {
 		closeErr := ws.Close()
 		if err != nil {
-			log.Printf("关闭连接发生异常:%v", closeErr.Error())
+			log.Errorf("关闭连接发生异常:%v", closeErr.Error())
 		}
 	}(ws)
 	for {
 		mt, message, msgErr := ws.ReadMessage()
-		log.Printf("Socket消息:%v", string(message))
+		log.Infof("Socket消息:%v", string(message))
 		if msgErr != nil {
-			log.Printf("连接地址%v 已断开:%v", ws.RemoteAddr(), msgErr)
+			log.Errorf("连接地址%v 已断开:%v", ws.RemoteAddr(), msgErr)
 			break
 		}
 		// 初始化解析
 		var data map[string]interface{}
 		dataErr := json.Unmarshal(message, &data)
 		if dataErr != nil {
-			log.Printf("序列化JSON异常:%v", dataErr)
+			log.Errorf("序列化JSON异常:%v", dataErr)
 			break
 		}
 		//获取消息ID
@@ -66,7 +66,7 @@ func socket(c *gin.Context) {
 				var groupMsg msg.GroupMsg
 				groupMsgErr := json.Unmarshal(message, &groupMsg)
 				if groupMsgErr != nil {
-					log.Printf("解析群消息异常:%v", groupMsgErr)
+					log.Errorf("解析群消息异常:%v", groupMsgErr)
 				}
 				go services.GroupMsg(groupMsg.Message, groupMsg.GroupId, groupMsg.SelfId, groupMsg.Sender.UserId, ws, mt)
 			}
@@ -77,7 +77,7 @@ func socket(c *gin.Context) {
 				var botInfo msg.LiveEvent
 				UnErr := json.Unmarshal(message, &botInfo)
 				if UnErr != nil {
-					log.Printf("Error:%v", UnErr.Error())
+					log.Errorf("Error:%v", UnErr.Error())
 				}
 				go services.Sell(botInfo.SelfId, mt, ws)
 				go services.NewBilLive(botInfo.SelfId, ws, mt)
@@ -85,9 +85,9 @@ func socket(c *gin.Context) {
 				var lifecycle msg.Lifecycle
 				lifecycleErr := json.Unmarshal(message, &lifecycle)
 				if lifecycleErr != nil {
-					log.Printf("解析异常:%v", lifecycleErr.Error())
+					log.Errorf("解析异常:%v", lifecycleErr.Error())
 				}
-				log.Printf("UID:%v 已建立连接", lifecycle.SelfId)
+				log.Infof("UID:%v 已建立连接", lifecycle.SelfId)
 			}
 		}
 	}
@@ -113,8 +113,18 @@ func main() {
 	config.InitConfig("config.yaml")
 	db.DB = db.InitDB()
 
+	data := config.GetConfig()
+	marshal, err2 := json.Marshal(data)
+	if err2 != nil {
+		log.Fatal("初始化配置失败", err2.Error())
+	}
+	var dataConfig config.GetConfigData
+	err1 := json.Unmarshal(marshal, &dataConfig)
+	if err1 != nil {
+		log.Fatal("初始化配置失败", err1.Error())
+	}
 	router.GET("/ws", socket)
-	err := router.Run(":" + config.Setting.QqBot.Port)
+	err := router.Run(":" + dataConfig.BotPort)
 	if err != nil {
 		log.Fatalf("启动失败请检查配置文件，发生异常:%v", err.Error())
 	}

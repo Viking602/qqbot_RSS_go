@@ -1,10 +1,9 @@
 package img
 
 import (
-	"fmt"
+	log "github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 )
@@ -13,7 +12,8 @@ func SauceNAO(imgUrl string) []byte {
 	params := url.Values{}
 	Url, err := url.Parse("https://saucenao.com/search.php")
 	if err != nil {
-		log.Printf("err:%v", err)
+		log.Errorf("err:%v", err.Error())
+		return []byte("请求失败")
 	}
 	params.Set("db", "999")
 	params.Set("output_type", "2")
@@ -25,16 +25,15 @@ func SauceNAO(imgUrl string) []byte {
 	urlPath := Url.String()
 	resp, respErr := http.Get(urlPath)
 	if respErr != nil {
-		fmt.Println(respErr)
+		log.Errorf(respErr.Error())
 		return []byte(respErr.Error())
 	}
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			log.Printf("关闭连接时发生异常:%v", err)
+			log.Errorf("关闭连接时发生异常:%v", err)
 		}
 	}(resp.Body)
 	body, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println(string(body))
 	return body
 }

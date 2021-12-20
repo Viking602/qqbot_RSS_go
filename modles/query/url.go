@@ -2,7 +2,7 @@ package query
 
 import (
 	"encoding/json"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"qqbot-RSS-go/db"
 )
 
@@ -29,13 +29,13 @@ func Url(rssType int, userId int64) []string {
 	var result []string
 	row, err := db.DB.Query("select a.GroupCode, b.Url from group_info as a INNER JOIN url_info as b ON a.GroupId = b.GroupId inner join rss_type as c on b.RssTypeId = c.RssTypeId inner join bot_info as d on a.BotId = d.BotId where a.Status = 1 and b.status = 1 and d.Status = 1 and c.RssTypeId = ? and d.BotUid = ? and b.BotId = d.BotId", rssType, userId)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 	}
 	for row.Next() {
 		var gUrl GroupUrl
 		err := row.Scan(&gUrl.GroupCode, &gUrl.Url)
 		if err != nil {
-			log.Println(err)
+			log.Error(err)
 		}
 		dict, _ := json.Marshal(gUrl)
 		data := string(dict)
@@ -48,13 +48,13 @@ func Group(groupId int, botUid int64) []string {
 	var result []string
 	row, err := db.DB.Query("select b.UrlName from group_info as a INNER JOIN url_info as b ON a.GroupId = b.GroupId inner join bot_info as c on a.BotId = c.BotId where a.Status = 1 and b.status = 1 and a.GroupCode = ? and c.BotUid = ? and b.BotId = a.BotId", groupId, botUid)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 	}
 	for row.Next() {
 		var gUrl GroupUrl
 		err := row.Scan(&gUrl.UrlName)
 		if err != nil {
-			log.Println(err)
+			log.Error(err)
 		}
 		dict, _ := json.Marshal(gUrl)
 		data := string(dict)
@@ -67,13 +67,13 @@ func LiveGroup(groupId int, botUid int64) []string {
 	var result []string
 	row, err := db.DB.Query("select RoomName from room_info as ri inner join bot_info bi on ri.BotId = bi.BotId inner join group_info gi on bi.BotId = gi.BotId where bi.BotUid = ? and gi.GroupCode = ? and ri.Status = 1 and gi.Status = 1 and bi.Status = 1 and ri.GroupId = gi.GroupId", botUid, groupId)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 	}
 	for row.Next() {
 		var roomName RoomName
 		err := row.Scan(&roomName.RoomName)
 		if err != nil {
-			log.Println(err)
+			log.Error(err)
 		}
 		dict, _ := json.Marshal(roomName)
 		data := string(dict)
@@ -86,7 +86,7 @@ func SendInfo(uri string, groupCode int, botUid int64) string {
 	var msg MsgInfo
 	err := db.DB.QueryRow("select MsgInfo from send_info as a inner join group_info as b on  a.GroupId = b.GroupId inner join bot_info as c on b.BotId = c.BotId where a.Url = ? and b.GroupCode = ?  and c.BotUid = ?", uri, groupCode, botUid).Scan(&msg.Info)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 	}
 	return msg.Info
 }
@@ -95,14 +95,14 @@ func GetRoomCode(botUid int64) []string {
 	var result []string
 	row, err := db.DB.Query("select RoomCode,c.GroupCode from room_info as a inner join bot_info as b on a.BotId = b.BotId inner join group_info as c on a.GroupId = c.GroupId where b.BotUid = ? and RssTypeId = 2", botUid)
 	if err != nil {
-		log.Printf("查询房间号时出现异常:%v:", err.Error())
+		log.Errorf("查询房间号时出现异常:%v:", err.Error())
 		return nil
 	}
 	for row.Next() {
 		var room RoomInfo
 		err := row.Scan(&room.RoomCode, &room.GroupCode)
 		if err != nil {
-			log.Printf("查询房间号时出现异常:%v", err.Error())
+			log.Errorf("查询房间号时出现异常:%v", err.Error())
 		}
 		dict, _ := json.Marshal(room)
 		result = append(result, string(dict))

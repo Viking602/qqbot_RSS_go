@@ -72,5 +72,9 @@ func GroupMsg(message string, groupId int, botUid int64, userId int, ws *websock
 		result := handlers.CommandNAO(strings.Replace(uri, "url=", "", 1))
 		data := strings.Join(result, "")
 		bot.SendGroupMessageSocket(groupId, `已为您搜索到以下图片:`+data, mt, ws)
+	case "点歌":
+		msgData := "[CQ:music,type=qq,id=5159470]"
+		bot.SendGroupMessageSocket(groupId, msgData, mt, ws)
+
 	}
 }
