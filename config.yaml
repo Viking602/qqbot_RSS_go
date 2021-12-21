@@ -1,0 +1,10 @@
+mysql:
+  user :
+  password :
+  host :
+  port :
+  db :
+
+qq_bot:
+  port :
+  env: true
