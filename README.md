@@ -3,7 +3,7 @@
 ## 简介
 目前还是一个非常简陋的版本，部分功能还在开发中
 
-如果有好的建议欢迎提issue
+如果有好的建议欢迎提issues
 
 计划未来增加web页面
 
@@ -91,3 +91,13 @@ docker run --name qqbot-rss -p 8080:8080 -d -e RSS_MYSQL_HOST="数据库连接�
       middlewares:
         <<: *default # 引用默认中间件
 ```
+
+### 4.指令相关
+rss-help 帮助信息
+rss-all    查询本群订阅信息
+rss-about    关于
+rss-status    运行状态
+rss-add RSS格式URL    添加RSS订阅
+rss-live 房间号(暂时仅支持B站)    添加直播间订阅
+rss-del 订阅名称    删除RSS订阅
+rss-live-del 房间号    删除直播订阅

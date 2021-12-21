@@ -44,8 +44,7 @@ func GroupMsg(message string, groupId int, botUid int64, userId int, ws *websock
 		bot.SendGroupMessageSocket(groupId, msgData, mt, ws)
 	case "rss-about":
 		msgData := "about:\n" +
-			"当前版本:DEV20211208\n" +
-			"有问题请联系QQ:1900097700"
+			"项目地址:https://github.com/Viking602/qqbot_RSS_go"
 		bot.SendGroupMessageSocket(groupId, msgData, mt, ws)
 	case "确实":
 		msgData := "[CQ:image,file=48008a017562dce6bb7e77cceb7af475.image,url=https://gchat.qpic.cn/gchatpic_new/1900097700/725315770-3053488658-48008A017562DCE6BB7E77CCEB7AF475/0?term=3,subType=0]"
