@@ -27,7 +27,7 @@ type RoomInfo struct {
 
 func Url(rssType int, userId int64) []string {
 	var result []string
-	row, err := db.DB.Query("select a.GroupCode, b.Url from group_info as a INNER JOIN url_info as b ON a.GroupId = b.GroupId inner join rss_type as c on b.RssTypeId = c.RssTypeId inner join bot_info as d on a.BotId = d.BotId where a.Status = 1 and b.status = 1 and d.Status = 1 and c.RssTypeId = ? and d.BotUid = ? and b.BotId = d.BotId", rssType, userId)
+	row, err := db.DB.Query("select a.GroupCode, b.Url from group_info as a INNER JOIN url_info as b ON a.GroupId = b.GroupId inner join bot_info as d on a.BotId = d.BotId where a.Status = 1 and b.status = 1 and d.Status = 1 and b.RssTypeId = ? and d.BotUid = ? and b.BotId = d.BotId", rssType, userId)
 	if err != nil {
 		log.Error(err)
 	}

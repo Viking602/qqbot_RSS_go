@@ -19,7 +19,7 @@ func LiveInfo(roomId string) []byte {
 	urlPath := Url.String()
 	resp, respErr := http.Get(urlPath)
 	if respErr != nil {
-		log.Info(respErr.Error())
+		log.Error(respErr.Error())
 		return []byte(respErr.Error())
 	}
 	defer func(Body io.ReadCloser) {

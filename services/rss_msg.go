@@ -84,7 +84,7 @@ func NewBilLive(botUid int64, ws *websocket.Conn, mt int) {
 				upJsonErr := json.Unmarshal(upData, &upInfo)
 				if upJsonErr != nil {
 					log.Warning("发生异常:%v", upJsonErr.Error())
-					log.Info("参数返回:%v", upData)
+					log.Infof("参数返回:%v", upData)
 					return
 				}
 				liveMsg := query.SendInfo(upInfo.Data.LiveRoom.Url, roomCode.GroupCode, botUid)
