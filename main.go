@@ -46,17 +46,6 @@ func socket(c *gin.Context) {
 			log.Errorf("序列化JSON异常:%v", dataErr)
 			break
 		}
-		//获取消息ID
-		//msgData, msgErr := json.Marshal(data)
-		//if msgErr != nil{
-		//	log.Printf(msgErr.Error())
-		//}
-		//var MsgData msg.ResultMsg
-		//jsonErr = json.Unmarshal(msgData, &MsgData)
-		//if jsonErr != nil{
-		//	log.Printf(jsonErr.Error())
-		//}
-		//消息ID获取结束
 		postType := data["post_type"]
 		switch postType {
 		case "message":

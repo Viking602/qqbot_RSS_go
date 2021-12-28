@@ -43,11 +43,11 @@ func Sell(botId int64, mt int, ws *websocket.Conn) {
 					nowTime := time.Unix(tm, 0).Format("2006-01-02 15:04:05")
 					if programTime > nowTime {
 						msgData := query.SendInfo(rssData.Url, rssData.GroupCode, botId)
-						if msgData == message {
+						if msgData == rssInfo.Link {
 							log.Infof("BOT:%v 群ID:%v %v消息已通知 发布时间%v", botId, rssData.GroupCode, feed.Title, programTime)
 						} else {
 							log.Infof("BOT:%v 群ID:%v 开始检查订阅消息，检测到%v发布了一条新消息，发布时间%v触发通知", botId, rssData.GroupCode, feed.Title, programTime)
-							db.InsertMsgId(message, rssData.Url, rssData.GroupCode, botId)
+							db.InsertMsgId(rssInfo.Link, rssData.Url, rssData.GroupCode, botId)
 							bot.SendGroupMessageSocket(rssData.GroupCode, message, mt, ws)
 						}
 					} else {
