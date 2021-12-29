@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"github.com/gorilla/websocket"
+	log "github.com/sirupsen/logrus"
 	"qqbot-RSS-go/bot"
 	"qqbot-RSS-go/bot/handlers"
 	"qqbot-RSS-go/modles/query"
@@ -40,14 +41,15 @@ func GroupMsg(message string, groupId int, botUid int64, userId int, ws *websock
 			"rss-add RSS格式URL\t添加RSS订阅\n" +
 			"rss-live 房间号(暂时仅支持B站)\t添加直播间订阅\n" +
 			"rss-del 订阅名称\t删除RSS订阅\n" +
-			"rss-live-del 房间号\t删除直播订阅"
+			"rss-live-del 房间号\t删除直播订阅\n" +
+			"点歌 歌曲名称\t目前仅支持网易云音乐"
 		bot.SendGroupMessageSocket(groupId, msgData, mt, ws)
 	case "rss-about":
 		msgData := "about:\n" +
 			"项目地址:https://github.com/Viking602/qqbot_RSS_go"
 		bot.SendGroupMessageSocket(groupId, msgData, mt, ws)
 	case "确实":
-		msgData := "[CQ:image,file=48008a017562dce6bb7e77cceb7af475.image,url=https://gchat.qpic.cn/gchatpic_new/1900097700/725315770-3053488658-48008A017562DCE6BB7E77CCEB7AF475/0?term=3,subType=0]"
+		msgData := "[CQ:image,file=f3faacc3e754f0aa1261d0760f21ab1f.image,l=https://gchat.qpic.cn/gchatpic_new/1900097700/725315770-2601464787-F3FAACC3E754F0AA1261D0760F21AB1F/0?term=2,subType=1]"
 		bot.SendGroupMessageSocket(groupId, msgData, mt, ws)
 	case "rss-add":
 		uri := strings.Replace(message, "rss-add ", "", 1)
@@ -66,10 +68,16 @@ func GroupMsg(message string, groupId int, botUid int64, userId int, ws *websock
 		data := handlers.CommandDelLive(botUid, groupId, roomCode, userId)
 		bot.SendGroupMessageSocket(groupId, data, mt, ws)
 	case "开始搜图":
+		log.Infof("收到群%v,用户%v发来的搜图请求,接收BOT%v", groupId, userId, botUid)
 		imgUrl := strings.Replace(message, "开始搜图", "", 1)
 		uri := strings.Split(imgUrl, ",")[2]
 		result := handlers.CommandNAO(strings.Replace(uri, "url=", "", 1))
 		data := strings.Join(result, "")
 		bot.SendGroupMessageSocket(groupId, `已为您搜索到以下图片:`+data, mt, ws)
+	case "点歌":
+		log.Infof("收到群%v,用户%v发来的点歌请求,接收BOT%v", groupId, userId, botUid)
+		musicName := strings.Replace(message, "点歌 ", "", 1)
+		data := handlers.CommandSearchMusic(musicName)
+		bot.SendGroupMessageSocket(groupId, data, mt, ws)
 	}
 }

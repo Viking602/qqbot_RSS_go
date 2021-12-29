@@ -7,6 +7,7 @@ import (
 	"qqbot-RSS-go/db"
 	"qqbot-RSS-go/modles/msg"
 	"qqbot-RSS-go/services/bilibili"
+	"qqbot-RSS-go/services/hiapi"
 	"qqbot-RSS-go/services/img"
 	"qqbot-RSS-go/utils"
 	"strconv"
@@ -107,6 +108,26 @@ func CommandNAO(url string) []string {
 			result = append(result, i)
 			break
 		}
+	}
+	return result
+}
+
+func CommandSearchMusic(s string) string {
+	data := hiapi.Search163(s)
+	var musicData msg.Search
+	err := json.Unmarshal(data, &musicData)
+	if err != nil {
+		logrus.Errorf("发生异常:%v", err.Error())
+	}
+	var result string
+	if musicData.Result.SongCount != 0 {
+		for _, songs := range musicData.Result.Songs {
+			msgData := `[CQ:music,type=163,id=` + strconv.Itoa(songs.Id) + `]`
+			result = msgData
+			break
+		}
+	} else {
+		return "搜索失败结果为0"
 	}
 	return result
 }
