@@ -69,9 +69,9 @@ func GroupMsg(message string, groupId int, botUid int64, userId int, ws *websock
 		roomCode := strings.Replace(message, "rss-live-del ", "", 1)
 		data := handlers.CommandDelLive(botUid, groupId, roomCode, userId)
 		bot.SendGroupMessageSocket(groupId, data, mt, ws)
-	case "开始搜图":
+	case "搜图":
 		log.Infof("收到群%v,用户%v发来的搜图请求,接收BOT%v", groupId, userId, botUid)
-		imgUrl := strings.Replace(message, "开始搜图", "", 1)
+		imgUrl := strings.Replace(message, "搜图", "", 1)
 		if imgUrl != "" && imgUrl != " " {
 			if strings.Contains(imgUrl, "]") {
 				bot.SendGroupMessageSocket(groupId, "正在搜索请稍后...", mt, ws)
