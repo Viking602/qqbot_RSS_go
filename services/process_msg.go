@@ -2,6 +2,7 @@ package services
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 	"qqbot-RSS-go/bot"
@@ -42,6 +43,7 @@ func GroupMsg(message string, groupId int, botUid int64, userId int, ws *websock
 			"rss-live 房间号(暂时仅支持B站)\t添加直播间订阅\n" +
 			"rss-del 订阅名称\t删除RSS订阅\n" +
 			"rss-live-del 房间号\t删除直播订阅\n" +
+			"开始搜图 图片\t搜索图片\n" +
 			"点歌 歌曲名称\t目前仅支持网易云音乐"
 		bot.SendGroupMessageSocket(groupId, msgData, mt, ws)
 	case "rss-about":
@@ -70,14 +72,24 @@ func GroupMsg(message string, groupId int, botUid int64, userId int, ws *websock
 	case "开始搜图":
 		log.Infof("收到群%v,用户%v发来的搜图请求,接收BOT%v", groupId, userId, botUid)
 		imgUrl := strings.Replace(message, "开始搜图", "", 1)
-		uri := strings.Split(imgUrl, ",")[2]
-		result := handlers.CommandNAO(strings.Replace(uri, "url=", "", 1))
-		data := strings.Join(result, "")
-		bot.SendGroupMessageSocket(groupId, `已为您搜索到以下图片:`+data, mt, ws)
+		if imgUrl != "" && imgUrl != " " {
+			if strings.Contains(imgUrl, "]") {
+				bot.SendGroupMessageSocket(groupId, "正在搜索请稍后...", mt, ws)
+				uri := strings.Split(imgUrl, ",")[2]
+				result := handlers.CommandNAO(strings.Replace(uri, "url=", "", 1))
+				data := strings.Join(result, "")
+				bot.SendGroupForwardMsgSocket(groupId, data, mt, ws)
+			}
+		}
 	case "点歌":
 		log.Infof("收到群%v,用户%v发来的点歌请求,接收BOT%v", groupId, userId, botUid)
-		musicName := strings.Replace(message, "点歌 ", "", 1)
-		data := handlers.CommandSearchMusic(musicName)
-		bot.SendGroupMessageSocket(groupId, data, mt, ws)
+		musicName := strings.Replace(message, "点歌", "", 1)
+		fmt.Println(musicName)
+		if musicName != "" {
+			data := handlers.CommandSearchMusic(musicName)
+			bot.SendGroupMessageSocket(groupId, data, mt, ws)
+		} else {
+			bot.SendGroupMessageSocket(groupId, "使用方法:点歌 歌曲名称", mt, ws)
+		}
 	}
 }

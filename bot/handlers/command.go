@@ -91,6 +91,7 @@ func CommandDelLive(botUid int64, groupId int, roomCode string, createUserId int
 }
 
 func CommandNAO(url string) []string {
+	logrus.Infof("开始对%v图片进行检索", url)
 	data := img.SauceNAO(url)
 	var saucenao msg.SauceNAO
 	err := json.Unmarshal(data, &saucenao)

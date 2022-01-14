@@ -9,6 +9,7 @@ import (
 )
 
 func SauceNAO(imgUrl string) []byte {
+	log.Infof("开始处理调用%v", imgUrl)
 	params := url.Values{}
 	Url, err := url.Parse("https://saucenao.com/search.php")
 	if err != nil {

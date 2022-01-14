@@ -83,7 +83,7 @@ func NewBilLive(botUid int64, ws *websocket.Conn, mt int) {
 				var upInfo msg.UpInfo
 				upJsonErr := json.Unmarshal(upData, &upInfo)
 				if upJsonErr != nil {
-					log.Warning("发生异常:%v", upJsonErr.Error())
+					log.Errorf("发生异常:%v", upJsonErr.Error())
 					log.Infof("参数返回:%v", upData)
 					return
 				}

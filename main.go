@@ -35,6 +35,7 @@ func socket(c *gin.Context) {
 	for {
 		mt, message, msgErr := ws.ReadMessage()
 		log.Infof("Socket消息:%v", string(message))
+		fmt.Println(string(message))
 		if msgErr != nil {
 			log.Errorf("连接地址%v 已断开:%v", ws.RemoteAddr(), msgErr)
 			break
