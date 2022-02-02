@@ -14,7 +14,7 @@ import (
 )
 
 func CommandAddRss(uri string, botUid int64, groupId int, userId int) string {
-	if uri != "rss-add" && uri != "" {
+	if uri != "添加订阅" && uri != "" {
 		fp := gofeed.NewParser()
 		rspCode := utils.CheckCode(uri)
 		if rspCode == 200 {
@@ -38,7 +38,7 @@ func CommandAddRss(uri string, botUid int64, groupId int, userId int) string {
 }
 
 func CommandAddLive(roomCode string, botUid int64, groupId int, userId int) string {
-	if roomCode != "rss-live" && roomCode != "" {
+	if roomCode != "添加直播订阅" && roomCode != "" {
 		roomInfo := bilibili.LiveInfo(roomCode)
 		var room msg.BiliLiveInfo
 		err := json.Unmarshal(roomInfo, &room)
@@ -65,7 +65,7 @@ func CommandAddLive(roomCode string, botUid int64, groupId int, userId int) stri
 }
 
 func CommandDelRss(botUid int64, groupId int, urlName string, createUserId int) string {
-	if urlName != "rss-del" && urlName != "" {
+	if urlName != "删除订阅" && urlName != "" {
 		result := db.DelRss(botUid, groupId, urlName, createUserId)
 		if result == true {
 			return urlName + "取消订阅成功"
@@ -78,7 +78,7 @@ func CommandDelRss(botUid int64, groupId int, urlName string, createUserId int) 
 }
 
 func CommandDelLive(botUid int64, groupId int, roomCode string, createUserId int) string {
-	if roomCode != "rss-live-del" && roomCode != "" {
+	if roomCode != "删除直播订阅" && roomCode != "" {
 		result := db.DelLive(botUid, groupId, roomCode, createUserId)
 		if result == true {
 			return roomCode + "直播订阅取消成功"

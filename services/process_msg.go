@@ -39,11 +39,11 @@ func GroupMsg(message string, groupId int, botUid int64, userId int, ws *websock
 			"rss-all\t查询本群订阅信息\n" +
 			"rss-about\t关于\n" +
 			"rss-status\t运行状态\n" +
-			"rss-add RSS格式URL\t添加RSS订阅\n" +
-			"rss-live 房间号(暂时仅支持B站)\t添加直播间订阅\n" +
-			"rss-del 订阅名称\t删除RSS订阅\n" +
-			"rss-live-del 房间号\t删除直播订阅\n" +
-			"开始搜图 图片\t搜索图片\n" +
+			"添加订阅 RSS格式URL\t添加RSS订阅\n" +
+			"添加直播订阅 房间号(暂时仅支持B站)\t添加直播间订阅\n" +
+			"删除订阅 订阅名称\t删除RSS订阅\n" +
+			"删除直播订阅 房间号\t删除直播订阅\n" +
+			"搜图 图片\t搜索图片(暂时仅支持saucenao)\n" +
 			"点歌 歌曲名称\t目前仅支持网易云音乐"
 		bot.SendGroupMessageSocket(groupId, msgData, mt, ws)
 	case "rss-about":
@@ -53,20 +53,20 @@ func GroupMsg(message string, groupId int, botUid int64, userId int, ws *websock
 	case "确实":
 		msgData := "[CQ:image,file=f3faacc3e754f0aa1261d0760f21ab1f.image,l=https://gchat.qpic.cn/gchatpic_new/1900097700/725315770-2601464787-F3FAACC3E754F0AA1261D0760F21AB1F/0?term=2,subType=1]"
 		bot.SendGroupMessageSocket(groupId, msgData, mt, ws)
-	case "rss-add":
-		uri := strings.Replace(message, "rss-add ", "", 1)
+	case "添加订阅":
+		uri := strings.Replace(message, "添加订阅 ", "", 1)
 		data := handlers.CommandAddRss(uri, botUid, groupId, userId)
 		bot.SendGroupMessageSocket(groupId, data, mt, ws)
-	case "rss-live":
-		roomCode := strings.Replace(message, "rss-live ", "", 1)
+	case "添加直播订阅":
+		roomCode := strings.Replace(message, "添加直播订阅 ", "", 1)
 		data := handlers.CommandAddLive(roomCode, botUid, groupId, userId)
 		bot.SendGroupMessageSocket(groupId, data, mt, ws)
-	case "rss-del":
-		urlName := strings.Replace(message, "rss-del ", "", 1)
+	case "删除订阅":
+		urlName := strings.Replace(message, "删除订阅 ", "", 1)
 		data := handlers.CommandDelRss(botUid, groupId, urlName, userId)
 		bot.SendGroupMessageSocket(groupId, data, mt, ws)
-	case "rss-live-del":
-		roomCode := strings.Replace(message, "rss-live-del ", "", 1)
+	case "删除直播订阅":
+		roomCode := strings.Replace(message, "删除直播订阅 ", "", 1)
 		data := handlers.CommandDelLive(botUid, groupId, roomCode, userId)
 		bot.SendGroupMessageSocket(groupId, data, mt, ws)
 	case "搜图":
