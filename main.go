@@ -62,7 +62,7 @@ func socket(c *gin.Context) {
 				log.Errorf("解析消息失败%v", retMsgErr.Error())
 			}
 			msgData := fmt.Sprintf("%v撤回消息内容为:%v", retMsg.Data.Sender.Nickname, retMsg.Data.Message)
-			bot.SendGroupMessageSocket(retMsg.Data.GroupId, msgData, mt, ws)
+			bot.SendMsgSocket(retMsg.Data.GroupId, msgData, mt, ws)
 		}
 
 		postType := data["post_type"]
@@ -107,7 +107,7 @@ func socket(c *gin.Context) {
 					log.Errorf("解析异常:%v", groupRecallMsgErr.Error())
 				}
 				msgData := "用户:" + strconv.Itoa(int(groupRecallMsg.UserId)) + "撤回了一条消息，消息ID:" + strconv.Itoa(groupRecallMsg.MessageId)
-				bot.SendGroupMessageSocket(groupRecallMsg.GroupId, msgData, mt, ws)
+				bot.SendGroupMessageSocket(groupRecallMsg.GroupId, msgData, mt, ws, true)
 			}
 		}
 	}

@@ -29,7 +29,7 @@ func Sell(botId int64, mt int, ws *websocket.Conn) {
 		if rspCode == 200 {
 			feed, rssErr := fp.ParseURL(rssData.Url)
 			if rssErr != nil {
-				log.Error("地址%v，连接错误:%v", rssData.Url, rssErr)
+				log.Errorf("地址%v，连接错误:%v", rssData.Url, rssErr)
 				return
 			}
 			for nm, rssInfo := range feed.Items {
@@ -48,7 +48,7 @@ func Sell(botId int64, mt int, ws *websocket.Conn) {
 						} else {
 							log.Infof("BOT:%v 群ID:%v 开始检查订阅消息，检测到%v发布了一条新消息，发布时间%v触发通知", botId, rssData.GroupCode, feed.Title, programTime)
 							db.InsertMsgId(rssInfo.Link, rssData.Url, rssData.GroupCode, botId)
-							bot.SendGroupMessageSocket(rssData.GroupCode, message, mt, ws)
+							bot.SendGroupMessageSocket(rssData.GroupCode, message, mt, ws, false)
 						}
 					} else {
 						log.Infof("BOT:%v 群ID:%v 开始检查%v的订阅消息，未检测到新消息，上一条消息发布时间%v", botId, rssData.GroupCode, feed.Title, programTime)
@@ -97,7 +97,7 @@ func NewBilLive(botUid int64, ws *websocket.Conn, mt int) {
 					log.Infof("BOT:%v 群ID:%v 直播间ID:%v开播消息已通知", botUid, roomCode.GroupCode, room.Data.RoomId)
 				} else {
 					db.InsertMsgId(message, upInfo.Data.LiveRoom.Url, roomCode.GroupCode, botUid)
-					bot.SendGroupMessageSocket(roomCode.GroupCode, message+`\n[CQ:image,file=`+upInfo.Data.LiveRoom.Cover+`]`, mt, ws)
+					bot.SendGroupMessageSocket(roomCode.GroupCode, message+`\n[CQ:image,file=`+upInfo.Data.LiveRoom.Cover+`]`, mt, ws, false)
 				}
 			} else {
 				log.Infof("BOT:%v 群ID:%v 直播间ID:%v已开播", botUid, roomCode.GroupCode, room.Data.RoomId)
