@@ -33,7 +33,7 @@ func CommandAddRss(uri string, botUid int64, groupId int, userId int) string {
 			return uri + "无法访问或错误的URL"
 		}
 	} else {
-		return "使用方法:rss-add RSS订阅URL\n建议使用https://rss.vark.fun获取RSS信息"
+		return "使用方法:添加订阅 RSS订阅URL\n建议使用https://rss.vark.fun获取RSS信息"
 	}
 }
 
@@ -60,7 +60,7 @@ func CommandAddLive(roomCode string, botUid int64, groupId int, userId int) stri
 			return upInfo.Data.Name + "直播间订阅失败，已存在或注册异常"
 		}
 	} else {
-		return "使用方法:rss-live bilibili直播间房间号"
+		return "使用方法:添加直播订阅 bilibili直播间房间号"
 	}
 }
 
@@ -86,7 +86,7 @@ func CommandDelLive(botUid int64, groupId int, roomCode string, createUserId int
 			return roomCode + "直播订阅取消失败，订阅不存在或权限不足"
 		}
 	} else {
-		return "使用方法:rss-live-del bilibili直播房间号"
+		return "使用方法:删除直播订阅 bilibili直播房间号"
 	}
 }
 

@@ -8,10 +8,11 @@ import (
 	"qqbot-RSS-go/bot"
 	"qqbot-RSS-go/bot/handlers"
 	"qqbot-RSS-go/modles/query"
+	"strconv"
 	"strings"
 )
 
-func GroupMsg(message string, groupId int, botUid int64, userId int, ws *websocket.Conn, mt int) {
+func GroupMsg(message string, groupId int, botUid int64, userId int, role string, ws *websocket.Conn, mt int) {
 	msg := strings.Split(message, " ")[0]
 	switch msg {
 	case "rss-all":
@@ -44,7 +45,8 @@ func GroupMsg(message string, groupId int, botUid int64, userId int, ws *websock
 			"删除订阅 订阅名称\t删除RSS订阅\n" +
 			"删除直播订阅 房间号\t删除直播订阅\n" +
 			"搜图 图片\t搜索图片(暂时仅支持saucenao)\n" +
-			"点歌 歌曲名称\t目前仅支持网易云音乐"
+			"点歌 歌曲名称\t目前仅支持网易云音乐\n" +
+			"查询消息 消息ID\t查询撤回消息，参数为撤回后机器人提醒的消息ID，考虑隐私问题目前仅管理员及群主使用"
 		bot.SendGroupMessageSocket(groupId, msgData, mt, ws)
 	case "rss-about":
 		msgData := "about:\n" +
@@ -91,5 +93,18 @@ func GroupMsg(message string, groupId int, botUid int64, userId int, ws *websock
 		} else {
 			bot.SendGroupMessageSocket(groupId, "使用方法:点歌 歌曲名称", mt, ws)
 		}
+	case "查询消息":
+		log.Infof("收到群%v,用户%v发来的查询消息请求,接收BOT%v, 角色:%v", groupId, userId, botUid, role)
+		if role == "owner" || role == "admin" {
+			messageId := strings.Replace(message, "查询消息 ", "", 1)
+			i, err := strconv.Atoi(messageId)
+			if err != nil {
+				log.Errorf(err.Error())
+			}
+			bot.SendGetMsg(i, mt, ws)
+		} else {
+			bot.SendGroupMessageSocket(groupId, "角色权限不足", mt, ws)
+		}
+
 	}
 }

@@ -8,10 +8,12 @@ import (
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 	"net/http"
+	"qqbot-RSS-go/bot"
 	"qqbot-RSS-go/db"
 	"qqbot-RSS-go/modles/config"
 	"qqbot-RSS-go/modles/msg"
 	"qqbot-RSS-go/services"
+	"strconv"
 )
 
 var upGrader = websocket.Upgrader{
@@ -47,6 +49,22 @@ func socket(c *gin.Context) {
 			log.Errorf("序列化JSON异常:%v", dataErr)
 			break
 		}
+
+		var ret map[string]interface{}
+		retErr := json.Unmarshal(message, &ret)
+		if retErr != nil {
+			log.Errorf("序列化返回消息异常%v", retErr.Error())
+		}
+		if ret["status"] == "ok" {
+			var retMsg msg.RetMsg
+			retMsgErr := json.Unmarshal(message, &retMsg)
+			if retMsgErr != nil {
+				log.Errorf("解析消息失败%v", retMsgErr.Error())
+			}
+			msgData := fmt.Sprintf("%v撤回消息内容为:%v", retMsg.Data.Sender.Nickname, retMsg.Data.Message)
+			bot.SendGroupMessageSocket(retMsg.Data.GroupId, msgData, mt, ws)
+		}
+
 		postType := data["post_type"]
 		switch postType {
 		case "message":
@@ -58,7 +76,7 @@ func socket(c *gin.Context) {
 				if groupMsgErr != nil {
 					log.Errorf("解析群消息异常:%v", groupMsgErr)
 				}
-				go services.GroupMsg(groupMsg.Message, groupMsg.GroupId, groupMsg.SelfId, groupMsg.Sender.UserId, ws, mt)
+				go services.GroupMsg(groupMsg.Message, groupMsg.GroupId, groupMsg.SelfId, groupMsg.Sender.UserId, groupMsg.Sender.Role, ws, mt)
 			}
 		case "meta_event":
 			metaEventType := data["meta_event_type"]
@@ -78,6 +96,18 @@ func socket(c *gin.Context) {
 					log.Errorf("解析异常:%v", lifecycleErr.Error())
 				}
 				log.Infof("UID:%v 已建立连接", lifecycle.SelfId)
+			}
+		case "notice":
+			noticeType := data["notice_type"]
+			switch noticeType {
+			case "group_recall":
+				var groupRecallMsg msg.GroupRecall
+				groupRecallMsgErr := json.Unmarshal(message, &groupRecallMsg)
+				if groupRecallMsgErr != nil {
+					log.Errorf("解析异常:%v", groupRecallMsgErr.Error())
+				}
+				msgData := "用户:" + strconv.Itoa(int(groupRecallMsg.UserId)) + "撤回了一条消息，消息ID:" + strconv.Itoa(groupRecallMsg.MessageId)
+				bot.SendGroupMessageSocket(groupRecallMsg.GroupId, msgData, mt, ws)
 			}
 		}
 	}

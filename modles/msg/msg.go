@@ -610,3 +610,34 @@ type SauceNAO struct {
 		} `json:"data"`
 	} `json:"results"`
 }
+
+type GroupRecall struct {
+	GroupId    int    `json:"group_id"`
+	MessageId  int    `json:"message_id"`
+	NoticeType string `json:"notice_type"`
+	OperatorId int    `json:"operator_id"`
+	PostType   string `json:"post_type"`
+	SelfId     int64  `json:"self_id"`
+	Time       int    `json:"time"`
+	UserId     int64  `json:"user_id"`
+}
+
+type RetMsg struct {
+	Data struct {
+		Group       bool   `json:"group"`
+		GroupId     int    `json:"group_id"`
+		Message     string `json:"message"`
+		MessageId   int    `json:"message_id"`
+		MessageIdV2 string `json:"message_id_v2"`
+		MessageSeq  int    `json:"message_seq"`
+		MessageType string `json:"message_type"`
+		RealId      int    `json:"real_id"`
+		Sender      struct {
+			Nickname string `json:"nickname"`
+			UserId   int    `json:"user_id"`
+		} `json:"sender"`
+		Time int `json:"time"`
+	} `json:"data"`
+	Retcode int    `json:"retcode"`
+	Status  string `json:"status"`
+}
