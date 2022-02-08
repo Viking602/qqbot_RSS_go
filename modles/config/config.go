@@ -41,7 +41,8 @@ func InitConfig(filename string) {
 	log.SetFormatter(&log.TextFormatter{
 		//以下设置只是为了使输出更美观
 		DisableColors:   true,
-		TimestampFormat: "2006-01-02 15:03:04",
+		FullTimestamp:   true,
+		TimestampFormat: "2006-01-02 15:04:05",
 	})
 	config, _ := ioutil.ReadFile(filename)
 	err := yaml.Unmarshal(config, &Setting)

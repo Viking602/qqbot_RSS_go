@@ -13,7 +13,6 @@ import (
 	"qqbot-RSS-go/modles/config"
 	"qqbot-RSS-go/modles/msg"
 	"qqbot-RSS-go/services"
-	"strconv"
 )
 
 var upGrader = websocket.Upgrader{
@@ -106,7 +105,7 @@ func socket(c *gin.Context) {
 				if groupRecallMsgErr != nil {
 					log.Errorf("解析异常:%v", groupRecallMsgErr.Error())
 				}
-				msgData := "用户:" + strconv.Itoa(int(groupRecallMsg.UserId)) + "撤回了一条消息，消息ID:" + strconv.Itoa(groupRecallMsg.MessageId)
+				msgData := fmt.Sprintf("用户%v 撤回了一条消息，消息ID:%v", groupRecallMsg.UserId, groupRecallMsg.MessageId)
 				bot.SendGroupMessageSocket(groupRecallMsg.GroupId, msgData, mt, ws, true)
 			}
 		}
