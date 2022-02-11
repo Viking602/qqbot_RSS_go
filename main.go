@@ -108,6 +108,14 @@ func socket(c *gin.Context) {
 				msgData := fmt.Sprintf("用户%v 撤回了一条消息，消息ID:%v", groupRecallMsg.UserId, groupRecallMsg.MessageId)
 				bot.SendGroupMessageSocket(groupRecallMsg.GroupId, msgData, mt, ws, true)
 			}
+		case "group_decrease":
+			var groupDecrease msg.GroupDecrease
+			groupDecreaseErr := json.Unmarshal(message, &groupDecrease)
+			if groupDecreaseErr != nil {
+				log.Errorf("解析异常:%v", groupDecreaseErr.Error())
+			}
+			msgData := fmt.Sprintf("用户%v离开了本群", groupDecrease.UserId)
+			bot.SendGroupMessageSocket(groupDecrease.GroupId, msgData, mt, ws, false)
 		}
 	}
 }
@@ -135,12 +143,12 @@ func main() {
 	data := config.GetConfig()
 	marshal, err2 := json.Marshal(data)
 	if err2 != nil {
-		log.Fatal("初始化配置失败", err2.Error())
+		log.Fatalf("解析配置文件失败:%v", err2.Error())
 	}
 	var dataConfig config.GetConfigData
 	err1 := json.Unmarshal(marshal, &dataConfig)
 	if err1 != nil {
-		log.Fatal("初始化配置失败", err1.Error())
+		log.Fatalf("初始化配置失败:%v", err1.Error())
 	}
 	router.GET("/ws", socket)
 	err := router.Run(":" + dataConfig.BotPort)

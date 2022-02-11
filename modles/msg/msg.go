@@ -641,3 +641,14 @@ type RetMsg struct {
 	Retcode int    `json:"retcode"`
 	Status  string `json:"status"`
 }
+
+type GroupDecrease struct {
+	GroupId    int    `json:"group_id"`
+	NoticeType string `json:"notice_type"`
+	OperatorId int    `json:"operator_id"`
+	PostType   string `json:"post_type"`
+	SelfId     int64  `json:"self_id"`
+	SubType    string `json:"sub_type"`
+	Time       int    `json:"time"`
+	UserId     int    `json:"user_id"`
+}
