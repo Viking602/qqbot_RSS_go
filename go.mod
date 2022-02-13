@@ -9,4 +9,5 @@ require (
 	github.com/mmcdole/gofeed v1.1.3
 	github.com/sirupsen/logrus v1.8.1
 	gopkg.in/yaml.v2 v2.4.0
+	mvdan.cc/xurls/v2 v2.3.0
 )

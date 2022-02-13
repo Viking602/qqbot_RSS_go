@@ -7,7 +7,7 @@ import (
 	"qqbot-RSS-go/db"
 	"qqbot-RSS-go/modles/msg"
 	"qqbot-RSS-go/services/bilibili"
-	"qqbot-RSS-go/services/hiapi"
+	"qqbot-RSS-go/services/hibiapi"
 	"qqbot-RSS-go/services/img"
 	"qqbot-RSS-go/utils"
 	"strconv"
@@ -114,7 +114,7 @@ func CommandNAO(url string) []string {
 }
 
 func CommandSearchMusic(s string) string {
-	data := hiapi.Search163(s)
+	data := hibiapi.Search163(s)
 	var musicData msg.Search
 	err := json.Unmarshal(data, &musicData)
 	if err != nil {

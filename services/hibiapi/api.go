@@ -15,7 +15,7 @@
  *
  */
 
-package hiapi
+package hibiapi
 
 import (
 	log "github.com/sirupsen/logrus"
