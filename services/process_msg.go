@@ -10,6 +10,7 @@ import (
 	"qqbot-RSS-go/modles/query"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func GroupMsg(message string, groupId int, botUid int64, userId int, role string, ws *websocket.Conn, mt int) {
@@ -105,6 +106,10 @@ func GroupMsg(message string, groupId int, botUid int64, userId int, role string
 		} else {
 			bot.SendGroupMessageSocket(groupId, "角色权限不足", mt, ws, false)
 		}
-
+	case "历史上的今天":
+		msgData := handlers.CommandToday()
+		t := time.Now()
+		date := fmt.Sprintf("%d年%d月%d日", t.Year(), t.Month(), t.Day())
+		bot.SendGroupMessageSocket(groupId, "今天是:"+date+msgData, mt, ws, false)
 	}
 }

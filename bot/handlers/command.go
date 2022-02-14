@@ -9,8 +9,10 @@ import (
 	"qqbot-RSS-go/services/bilibili"
 	"qqbot-RSS-go/services/hibiapi"
 	"qqbot-RSS-go/services/img"
+	"qqbot-RSS-go/services/universal"
 	"qqbot-RSS-go/utils"
 	"strconv"
+	"strings"
 )
 
 func CommandAddRss(uri string, botUid int64, groupId int, userId int) string {
@@ -130,5 +132,18 @@ func CommandSearchMusic(s string) string {
 	} else {
 		return "搜索失败结果为0"
 	}
+	return result
+}
+
+func CommandToday() string {
+	data := universal.Today()
+	var todayMsg msg.TodayMsg
+	err := json.Unmarshal(data, &todayMsg)
+	if err != nil {
+		logrus.Errorf("解析历史上的今天接口发生异常%v", err.Error())
+	}
+	eventMsg := strings.Join(todayMsg.Dashiji, `\n`)
+	holiday := strings.Join(todayMsg.Jeiri, `\n`)
+	result := `\n大事记:\n` + eventMsg + `\n节日:\n` + holiday
 	return result
 }

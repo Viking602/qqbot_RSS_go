@@ -652,3 +652,11 @@ type GroupDecrease struct {
 	Time       int    `json:"time"`
 	UserId     int    `json:"user_id"`
 }
+
+type TodayMsg struct {
+	Dashiji  []string `json:"大事记"`
+	Chusheng []string `json:"出生"`
+	Shishi   []string `json:"逝世"`
+	Jeiri    []string `json:"节假日和习俗"`
+	Ps       []string `json:"脚注"`
+}
