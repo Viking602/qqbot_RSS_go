@@ -54,7 +54,7 @@ func GroupMsg(message string, groupId int, botUid int64, userId int, role string
 			"项目地址:https://github.com/Viking602/qqbot_RSS_go"
 		bot.SendGroupMessageSocket(groupId, msgData, mt, ws, false)
 	case "确实":
-		msgData := "[CQ:image,file=https://gchat.qpic.cn/gchatpic_new/1900097700/725315770-2601464787-F3FAACC3E754F0AA1261D0760F21AB1F/0?term=2,subType=1]"
+		msgData := "[CQ:image,file=https://gchat.qpic.cn/gchatpic_new/1/0-0-68324A5E6ADD67F2F20A549ABD768D21/0?term=2,subType=1]"
 		bot.SendGroupMessageSocket(groupId, msgData, mt, ws, false)
 	case "添加订阅":
 		uri := strings.Replace(message, "添加订阅 ", "", 1)
