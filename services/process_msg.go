@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
+	"math/rand"
 	"qqbot-RSS-go/bot"
 	"qqbot-RSS-go/bot/handlers"
 	"qqbot-RSS-go/modles/query"
@@ -111,5 +112,12 @@ func GroupMsg(message string, groupId int, botUid int64, userId int, role string
 		t := time.Now()
 		date := fmt.Sprintf("%d年%d月%d日", t.Year(), t.Month(), t.Day())
 		bot.SendGroupMessageSocket(groupId, "今天是:"+date+msgData, mt, ws, false)
+	case "吉田直树的回答":
+		message := make([]string, 0)
+		message = append(message,
+			"[CQ:image,file=https://gchat.qpic.cn/gchatpic_new/1/0-0-4FB894AA4BF1507CA47420A0A229D64E/0?term=2,subType=0]",
+			"[CQ:image,file=https://gchat.qpic.cn/gchatpic_new/1/0-0-E0A15CA4DBEDBD5D358B42007BAD3EF4/0?term=2,subType=0]")
+		msgData := message[rand.Intn(len(message))]
+		bot.SendGroupMessageSocket(groupId, msgData, mt, ws, false)
 	}
 }
