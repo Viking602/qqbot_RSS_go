@@ -102,7 +102,7 @@ func CommandNAO(url string) []string {
 	}
 	var result []string
 	for _, imgs := range saucenao.Results {
-		msgData := `[CQ:image,file=` + imgs.Header.Thumbnail + `]\n` +
+		msgData := `\n[CQ:image,file=` + imgs.Header.Thumbnail + `]\n` +
 			`相似度:` + imgs.Header.Similarity + `\n` +
 			`标题:` + imgs.Data.Title + `\n` +
 			`链接:`
