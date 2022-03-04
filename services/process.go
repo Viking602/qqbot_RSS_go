@@ -15,6 +15,7 @@ import (
 )
 
 func GroupMsg(message string, groupId int, botUid int64, userId int, role string, ws *websocket.Conn, mt int) {
+	startTime := time.Now()
 	msg := strings.Split(message, " ")[0]
 	switch msg {
 	case "rss-all":
@@ -34,8 +35,8 @@ func GroupMsg(message string, groupId int, botUid int64, userId int, role string
 		msgData := "当前订阅:\n" +
 			strings.Join(result, "\n")
 		bot.SendGroupMessageSocket(groupId, msgData, mt, ws, false)
-	case "rss-status":
-		msgData := "正在运行"
+	case "#ping":
+		msgData := fmt.Sprintf("%v", time.Since(startTime))
 		bot.SendGroupMessageSocket(groupId, msgData, mt, ws, false)
 	case "rss-help":
 		msgData := "帮助:\n" +
@@ -59,7 +60,8 @@ func GroupMsg(message string, groupId int, botUid int64, userId int, role string
 		bot.SendGroupMessageSocket(groupId, msgData, mt, ws, false)
 	case "添加订阅":
 		uri := strings.Replace(message, "添加订阅 ", "", 1)
-		data := handlers.CommandAddRss(uri, botUid, groupId, userId)
+		newUri := strings.Replace(uri, "rsshub.app", "rss.vark.fun", 1)
+		data := handlers.CommandAddRss(newUri, botUid, groupId, userId)
 		bot.SendGroupMessageSocket(groupId, data, mt, ws, false)
 	case "添加直播订阅":
 		roomCode := strings.Replace(message, "添加直播订阅 ", "", 1)

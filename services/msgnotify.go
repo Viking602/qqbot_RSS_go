@@ -15,8 +15,9 @@ import (
 	"time"
 )
 
-func Sell(botId int64, mt int, ws *websocket.Conn) {
-	urlData := query.Url(1, botId)
+func Sell(botUid int64, mt int, ws *websocket.Conn) {
+	startTime := time.Now()
+	urlData := query.Url(1, botUid)
 	var rssData query.GroupUrl
 	for _, data := range urlData {
 		err := json.Unmarshal([]byte(data), &rssData)
@@ -35,31 +36,34 @@ func Sell(botId int64, mt int, ws *websocket.Conn) {
 			for nm, rssInfo := range feed.Items {
 				if nm == 0 {
 					programTime := utils.ReTime(rssInfo.Published)
-					message := feed.Title + `\n` +
+					message := feed.Title + ` 更新! \n` +
 						"标题:" + rssInfo.Title + `\n` +
 						"链接:" + rssInfo.Link + `\n` +
 						"日期:" + programTime
 					tm := time.Now().Unix() - 600
 					nowTime := time.Unix(tm, 0).Format("2006-01-02 15:04:05")
 					if programTime > nowTime {
-						msgData := query.SendInfo(rssData.Url, rssData.GroupCode, botId)
+						msgData := query.SendInfo(rssData.Url, rssData.GroupCode, botUid)
 						if msgData == rssInfo.Link {
-							log.Infof("BOT:%v 群ID:%v %v消息已通知 发布时间%v", botId, rssData.GroupCode, feed.Title, programTime)
+							log.Infof("BOT:%v 群ID:%v %v消息已通知 发布时间%v", botUid, rssData.GroupCode, feed.Title, programTime)
 						} else {
-							log.Infof("BOT:%v 群ID:%v 开始检查订阅消息，检测到%v发布了一条新消息，发布时间%v触发通知", botId, rssData.GroupCode, feed.Title, programTime)
-							db.InsertMsgId(rssInfo.Link, rssData.Url, rssData.GroupCode, botId)
+							log.Infof("BOT:%v 群ID:%v 开始检查订阅消息，检测到%v发布了一条新消息，发布时间%v触发通知", botUid, rssData.GroupCode, feed.Title, programTime)
+							db.InsertMsgId(rssInfo.Link, rssData.Url, rssData.GroupCode, botUid)
 							bot.SendGroupMessageSocket(rssData.GroupCode, message, mt, ws, false)
 						}
 					} else {
-						log.Infof("BOT:%v 群ID:%v 开始检查%v的订阅消息，未检测到新消息，上一条消息发布时间%v", botId, rssData.GroupCode, feed.Title, programTime)
+						//log.Infof("BOT:%v 群ID:%v 开始检查%v的订阅消息，未检测到新消息，上一条消息发布时间%v", botUid, rssData.GroupCode, feed.Title, programTime)
 					}
 				}
 			}
 		}
 	}
+	since := time.Since(startTime).Seconds()
+	log.Infof("BOT:%v RSS订阅轮询完成耗时:%vs", botUid, utils.Decimal(since))
 }
 
 func NewBilLive(botUid int64, ws *websocket.Conn, mt int) {
+	startTime := time.Now()
 	data := query.GetRoomCode(botUid)
 	var roomCode query.RoomInfo
 	for _, roomData := range data {
@@ -103,7 +107,9 @@ func NewBilLive(botUid int64, ws *websocket.Conn, mt int) {
 				log.Infof("BOT:%v 群ID:%v 直播间ID:%v已开播", botUid, roomCode.GroupCode, room.Data.RoomId)
 			}
 		} else {
-			log.Infof("BOT:%v 群ID:%v 直播间ID:%v未开播", botUid, roomCode.GroupCode, room.Data.RoomId)
+			//log.Infof("BOT:%v 群ID:%v 直播间ID:%v未开播", botUid, roomCode.GroupCode, room.Data.RoomId)
 		}
 	}
+	since := time.Since(startTime).Seconds()
+	log.Infof("BOT:%v 直播订阅轮询完成耗时:%vs", botUid, utils.Decimal(since))
 }
