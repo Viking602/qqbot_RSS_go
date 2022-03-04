@@ -3,6 +3,7 @@ package utils
 import (
 	log "github.com/sirupsen/logrus"
 	"io"
+	"math"
 	"net/http"
 	"time"
 )
@@ -31,4 +32,8 @@ func CheckCode(uri string) int {
 		}
 	}(response.Body)
 	return response.StatusCode
+}
+
+func Decimal(value float64) float64 {
+	return math.Trunc(value*1e2+0.5) * 1e-2
 }

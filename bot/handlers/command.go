@@ -22,7 +22,7 @@ func CommandAddRss(uri string, botUid int64, groupId int, userId int) string {
 		if rspCode == 200 {
 			feed, rssErr := fp.ParseURL(uri)
 			if rssErr != nil {
-				logrus.Error("非法RSS格式:%v", rssErr.Error())
+				logrus.Errorf("非法RSS格式:%v", rssErr.Error())
 				return "非法RSS格式"
 			}
 			result := db.InsertUrl(uri, feed.Title, botUid, groupId, userId)
@@ -35,7 +35,7 @@ func CommandAddRss(uri string, botUid int64, groupId int, userId int) string {
 			return uri + "无法访问或错误的URL"
 		}
 	} else {
-		return "使用方法:添加订阅 RSS订阅URL\n建议使用https://rss.vark.fun获取RSS信息"
+		return "使用方法:添加订阅 RSS订阅URL\n建议使用https://docs.rsshub.app/获取RSS信息"
 	}
 }
 
@@ -75,7 +75,7 @@ func CommandDelRss(botUid int64, groupId int, urlName string, createUserId int) 
 			return urlName + "取消订阅失败，订阅不存在或权限不足"
 		}
 	} else {
-		return "使用方法:rss-del 订阅名称"
+		return "使用方法:删除订阅 订阅名称"
 	}
 }
 
