@@ -1,3 +1,5 @@
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FViking602%2Fqqbot_RSS_go.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FViking602%2Fqqbot_RSS_go?ref=badge_large)
+
 # QQ订阅机器人
 
 ## 简介
