@@ -660,3 +660,25 @@ type TodayMsg struct {
 	Jeiri    []string `json:"节假日和习俗"`
 	Ps       []string `json:"脚注"`
 }
+
+type FishermanMsg struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+	Data    struct {
+		MoyuUrl  string `json:"moyu_url"`
+		Articles []struct {
+			Title   string `json:"title"`
+			Url     string `json:"url"`
+			PubTime string `json:"pub_time"`
+			Cover   string `json:"cover"`
+			Digest  string `json:"digest"`
+			Sources struct {
+				Source struct {
+					Name string `json:"name"`
+				} `json:"source"`
+			} `json:"sources"`
+		} `json:"articles"`
+	} `json:"data"`
+}
+
+//https://api.j4u.ink/proxy/remote/moyu.json

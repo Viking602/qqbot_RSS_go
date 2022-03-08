@@ -35,6 +35,7 @@ func socket(c *gin.Context) {
 	}(ws)
 	for {
 		mt, message, msgErr := ws.ReadMessage()
+		go services.Moyu(mt, ws)
 		log.Infof("Socket消息:%v", string(message))
 		fmt.Println(string(message))
 		if msgErr != nil {

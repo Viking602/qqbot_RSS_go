@@ -2,14 +2,18 @@ package services
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/mmcdole/gofeed"
+	"github.com/robfig/cron"
 	log "github.com/sirupsen/logrus"
+	"os"
 	"qqbot-RSS-go/bot"
 	"qqbot-RSS-go/db"
 	"qqbot-RSS-go/modles/msg"
 	"qqbot-RSS-go/modles/query"
 	"qqbot-RSS-go/services/bilibili"
+	"qqbot-RSS-go/services/other"
 	"qqbot-RSS-go/utils"
 	"strconv"
 	"time"
@@ -17,9 +21,11 @@ import (
 
 func Sell(botUid int64, mt int, ws *websocket.Conn) {
 	startTime := time.Now()
+	nm := 0
 	urlData := query.Url(1, botUid)
 	var rssData query.GroupUrl
 	for _, data := range urlData {
+		nm += 1
 		err := json.Unmarshal([]byte(data), &rssData)
 		if err != nil {
 			log.Error("解析错误:%v", err.Error())
@@ -59,14 +65,16 @@ func Sell(botUid int64, mt int, ws *websocket.Conn) {
 		}
 	}
 	since := time.Since(startTime).Seconds()
-	log.Infof("BOT:%v RSS订阅轮询完成耗时:%vs", botUid, utils.Decimal(since))
+	log.Infof("BOT:%v RSS订阅轮询完成耗时:%vs 轮询次数:%v", botUid, utils.Decimal(since), nm)
 }
 
 func NewBilLive(botUid int64, ws *websocket.Conn, mt int) {
 	startTime := time.Now()
 	data := query.GetRoomCode(botUid)
+	nm := 0
 	var roomCode query.RoomInfo
 	for _, roomData := range data {
+		nm += 1
 		roomCodeErr := json.Unmarshal([]byte(roomData), &roomCode)
 		if roomCodeErr != nil {
 			log.Errorf("发生异常:%v", roomCodeErr)
@@ -111,5 +119,30 @@ func NewBilLive(botUid int64, ws *websocket.Conn, mt int) {
 		}
 	}
 	since := time.Since(startTime).Seconds()
-	log.Infof("BOT:%v 直播订阅轮询完成耗时:%vs", botUid, utils.Decimal(since))
+	log.Infof("BOT:%v 直播订阅轮询完成耗时:%vs 轮询次数:%v", botUid, utils.Decimal(since), nm)
+}
+
+func Moyu(mt int, ws *websocket.Conn) {
+	c := cron.New()
+	spec := "0 */1 * * * ?"
+	err := c.AddFunc(spec, func() {
+		groupId, _ := strconv.Atoi(os.Getenv("TMP_GROUPID"))
+		data := other.FishMan()
+		var fishmanmsg msg.FishermanMsg
+		fisherr := json.Unmarshal(data, &fishmanmsg)
+		msgData := fmt.Sprintf("[CQ:image,file=%s]", fishmanmsg.Data.MoyuUrl)
+		bot.SendGroupMessageSocket(groupId, msgData, mt, ws, false)
+		if fisherr != nil {
+			log.Errorf("发生异常:%v", fisherr.Error())
+			log.Infof("参数返回:%v", data)
+			return
+		}
+	})
+	if err != nil {
+		log.Errorf("AddFunc error : %v", err.Error())
+		return
+	}
+	c.Start()
+	defer c.Stop()
+	select {}
 }
