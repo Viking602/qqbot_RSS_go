@@ -22,6 +22,7 @@ var upGrader = websocket.Upgrader{
 }
 
 func socket(c *gin.Context) {
+	var cronType = 0
 	ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		log.Errorf("连接异常:%v", err)
@@ -35,11 +36,12 @@ func socket(c *gin.Context) {
 	}(ws)
 	for {
 		mt, message, msgErr := ws.ReadMessage()
-		go services.Moyu(mt, ws)
 		log.Infof("Socket消息:%v", string(message))
 		fmt.Println(string(message))
 		if msgErr != nil {
 			log.Errorf("连接地址%v 已断开:%v", ws.RemoteAddr(), msgErr)
+			cronType = 0
+			services.CronInfo(mt, ws, cronType)
 			break
 		}
 		// 初始化解析
@@ -87,8 +89,8 @@ func socket(c *gin.Context) {
 				if UnErr != nil {
 					log.Errorf("Error:%v", UnErr.Error())
 				}
-				go services.Sell(botInfo.SelfId, mt, ws)
-				go services.NewBilLive(botInfo.SelfId, ws, mt)
+				go services.Rss(botInfo.SelfId, mt, ws)
+				go services.BilLive(botInfo.SelfId, ws, mt)
 			case "lifecycle":
 				var lifecycle msg.Lifecycle
 				lifecycleErr := json.Unmarshal(message, &lifecycle)
@@ -117,6 +119,12 @@ func socket(c *gin.Context) {
 				msgData := fmt.Sprintf("用户%v 离开了本群", groupDecrease.UserId)
 				bot.SendGroupMessageSocket(groupDecrease.GroupId, msgData, mt, ws, false)
 			}
+		}
+		if cronType > 0 {
+			continue
+		} else {
+			cronType = 1
+			go services.CronInfo(mt, ws, cronType)
 		}
 	}
 }

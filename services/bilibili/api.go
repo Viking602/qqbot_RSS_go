@@ -55,3 +55,27 @@ func GetUpInfo(mid string) []byte {
 	body, _ := ioutil.ReadAll(resp.Body)
 	return body
 }
+
+func GetVideoInfo(bvid string) []byte {
+	params := url.Values{}
+	Url, err := url.Parse("https://api.bilibili.com/x/web-interface/view")
+	if err != nil {
+		log.Errorf("发生异常:%v", err.Error())
+	}
+	params.Set("bvid", bvid)
+	Url.RawQuery = params.Encode()
+	urlPath := Url.String()
+	resp, respErr := http.Get(urlPath)
+	if respErr != nil {
+		log.Errorf("发生异常:%v", respErr)
+		return []byte(respErr.Error())
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Errorf("关闭连接时发生异常:%v", err)
+		}
+	}(resp.Body)
+	body, _ := ioutil.ReadAll(resp.Body)
+	return body
+}

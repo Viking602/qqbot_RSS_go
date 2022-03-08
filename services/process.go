@@ -6,9 +6,12 @@ import (
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 	"math/rand"
+	"os"
 	"qqbot-RSS-go/bot"
 	"qqbot-RSS-go/bot/handlers"
+	"qqbot-RSS-go/modles/msg"
 	"qqbot-RSS-go/modles/query"
+	"qqbot-RSS-go/services/other"
 	"strconv"
 	"strings"
 	"time"
@@ -16,8 +19,8 @@ import (
 
 func GroupMsg(message string, groupId int, botUid int64, userId int, role string, ws *websocket.Conn, mt int) {
 	startTime := time.Now()
-	msg := strings.Split(message, " ")[0]
-	switch msg {
+	msgInfo := strings.Split(message, " ")[0]
+	switch msgInfo {
 	case "rss-all":
 		groupData := query.Group(groupId, botUid)
 		liveGroupData := query.LiveGroup(groupId, botUid)
@@ -121,5 +124,19 @@ func GroupMsg(message string, groupId int, botUid int64, userId int, role string
 			"[CQ:image,file=https://gchat.qpic.cn/gchatpic_new/1/0-0-E0A15CA4DBEDBD5D358B42007BAD3EF4/0?term=2,subType=0]")
 		msgData := message[rand.Intn(len(message))]
 		bot.SendGroupMessageSocket(groupId, msgData, mt, ws, false)
+	}
+}
+
+func MoyuMsg(mt int, ws *websocket.Conn) {
+	groupId, _ := strconv.Atoi(os.Getenv("TMP_GROUPID"))
+	data := other.FishMan()
+	var fishmanmsg msg.FishermanMsg
+	fisherr := json.Unmarshal(data, &fishmanmsg)
+	msgData := fmt.Sprintf("[CQ:image,file=%s]", fishmanmsg.Data.MoyuUrl)
+	bot.SendGroupMessageSocket(groupId, msgData, mt, ws, false)
+	if fisherr != nil {
+		log.Errorf("发生异常:%v", fisherr.Error())
+		log.Infof("参数返回:%v", data)
+		return
 	}
 }

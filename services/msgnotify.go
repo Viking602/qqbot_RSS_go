@@ -2,24 +2,21 @@ package services
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/mmcdole/gofeed"
 	"github.com/robfig/cron"
 	log "github.com/sirupsen/logrus"
-	"os"
 	"qqbot-RSS-go/bot"
 	"qqbot-RSS-go/db"
 	"qqbot-RSS-go/modles/msg"
 	"qqbot-RSS-go/modles/query"
 	"qqbot-RSS-go/services/bilibili"
-	"qqbot-RSS-go/services/other"
 	"qqbot-RSS-go/utils"
 	"strconv"
 	"time"
 )
 
-func Sell(botUid int64, mt int, ws *websocket.Conn) {
+func Rss(botUid int64, mt int, ws *websocket.Conn) {
 	startTime := time.Now()
 	nm := 0
 	urlData := query.Url(1, botUid)
@@ -68,7 +65,7 @@ func Sell(botUid int64, mt int, ws *websocket.Conn) {
 	log.Infof("BOT:%v RSS订阅轮询完成耗时:%vs 轮询次数:%v", botUid, utils.Decimal(since), nm)
 }
 
-func NewBilLive(botUid int64, ws *websocket.Conn, mt int) {
+func BilLive(botUid int64, ws *websocket.Conn, mt int) {
 	startTime := time.Now()
 	data := query.GetRoomCode(botUid)
 	nm := 0
@@ -122,27 +119,23 @@ func NewBilLive(botUid int64, ws *websocket.Conn, mt int) {
 	log.Infof("BOT:%v 直播订阅轮询完成耗时:%vs 轮询次数:%v", botUid, utils.Decimal(since), nm)
 }
 
-func Moyu(mt int, ws *websocket.Conn) {
+func CronInfo(mt int, ws *websocket.Conn, crontype int) {
 	c := cron.New()
-	spec := "0 */1 * * * ?"
-	err := c.AddFunc(spec, func() {
-		groupId, _ := strconv.Atoi(os.Getenv("TMP_GROUPID"))
-		data := other.FishMan()
-		var fishmanmsg msg.FishermanMsg
-		fisherr := json.Unmarshal(data, &fishmanmsg)
-		msgData := fmt.Sprintf("[CQ:image,file=%s]", fishmanmsg.Data.MoyuUrl)
-		bot.SendGroupMessageSocket(groupId, msgData, mt, ws, false)
-		if fisherr != nil {
-			log.Errorf("发生异常:%v", fisherr.Error())
-			log.Infof("参数返回:%v", data)
-			return
-		}
+	spec := "0 0 8 * * *"
+	moyuErr := c.AddFunc(spec, func() {
+		MoyuMsg(mt, ws)
 	})
-	if err != nil {
-		log.Errorf("AddFunc error : %v", err.Error())
+	if moyuErr != nil {
+		log.Errorf("AddFunc error : %v", moyuErr.Error())
 		return
 	}
-	c.Start()
+	if crontype != 0 {
+		c.Start()
+		log.Infoln("定时任务启动成功")
+	} else {
+		c.Stop()
+		log.Infoln("由于链接关闭，定时任务终止")
+	}
 	defer c.Stop()
 	select {}
 }
