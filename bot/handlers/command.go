@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/mmcdole/gofeed"
 	"github.com/sirupsen/logrus"
 	"qqbot-RSS-go/db"
@@ -9,6 +10,7 @@ import (
 	"qqbot-RSS-go/services/bilibili"
 	"qqbot-RSS-go/services/hibiapi"
 	"qqbot-RSS-go/services/img"
+	"qqbot-RSS-go/services/other"
 	"qqbot-RSS-go/services/universal"
 	"qqbot-RSS-go/utils"
 	"strconv"
@@ -145,5 +147,30 @@ func CommandToday() string {
 	eventMsg := strings.Join(todayMsg.Dashiji, `\n`)
 	holiday := strings.Join(todayMsg.Jeiri, `\n`)
 	result := `\n大事记:\n` + eventMsg + `\n节日:\n` + holiday
+	return result
+}
+
+func CommandCovid19Search(province string, city string) []string {
+	var result []string
+	if province != "" && province != "疫情查询" {
+		data := other.TencentCovidSearch(province, city)
+		var covid19Msg msg.TencentCovidSearchMsg
+		err := json.Unmarshal(data, &covid19Msg)
+		if err != nil {
+			logrus.Errorf("发生异常:%s", err.Error())
+		}
+		if covid19Msg.Data != nil {
+			for _, covidData := range covid19Msg.Data {
+				var aero = covidData.Province
+				dataMsg := fmt.Sprintf("%v%v疫情信息\n今日新增确诊:%v \n新增无症状:%v \n累计确诊:%v \n累计无症状:%v \n累计死亡:%v \n累计治愈:%v \n来源:腾讯新闻疫情数据 \n日期:%v.%v",
+					aero, covidData.City, covidData.ConfirmAdd, covidData.WzzAdd, covidData.Confirm, covidData.Wzz, covidData.Dead, covidData.Heal, covidData.Year, covidData.Date)
+				result = append(result, dataMsg)
+			}
+			return result
+		}
+		result = append(result, "数据查询失败,请检查输入内容暂时仅支持省级单位及直辖市")
+		return result
+	}
+	result = append(result, "请使用 疫情查询 + 省级单位 查询")
 	return result
 }

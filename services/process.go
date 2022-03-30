@@ -124,6 +124,12 @@ func GroupMsg(message string, groupId int, botUid int64, userId int, role string
 			"[CQ:image,file=https://gchat.qpic.cn/gchatpic_new/1/0-0-E0A15CA4DBEDBD5D358B42007BAD3EF4/0?term=2,subType=0]")
 		msgData := message[rand.Intn(len(message))]
 		bot.SendGroupMessageSocket(groupId, msgData, mt, ws, false)
+	case "疫情查询":
+		prName := strings.Replace(message, "疫情查询 ", "", 1)
+		p := strings.Replace(prName, "省", "", 1)
+		c := strings.Replace(p, "市", "", 1)
+		data := handlers.CommandCovid19Search(c, "")
+		bot.SendGroupMessageSocket(groupId, data[len(data)-1], mt, ws, false)
 	}
 }
 

@@ -682,3 +682,31 @@ type FishermanMsg struct {
 }
 
 //https://api.j4u.ink/proxy/remote/moyu.json
+
+type TencentCovidSearchMsg struct {
+	Ret  int    `json:"ret"`
+	Info string `json:"info"`
+	Data []struct {
+		Year           int    `json:"year"`
+		Date           string `json:"date"`
+		Country        string `json:"country"`
+		Province       string `json:"province"`
+		City           string `json:"city"`
+		Confirm        int    `json:"confirm"`
+		Dead           int    `json:"dead"`
+		Heal           int    `json:"heal"`
+		ConfirmAdd     string `json:"confirm_add"`
+		ConfirmCuts    string `json:"confirm_cuts"`
+		DeadCuts       string `json:"dead_cuts"`
+		NowConfirmCuts string `json:"now_confirm_cuts"`
+		HealCuts       string `json:"heal_cuts"`
+		NewConfirm     int    `json:"newConfirm"`
+		NewHeal        int    `json:"newHeal"`
+		NewDead        int    `json:"newDead"`
+		Description    string `json:"description"`
+		Wzz            int    `json:"wzz"`
+		WzzAdd         int    `json:"wzz_add"`
+	} `json:"data"`
+}
+
+//https://api.inews.qq.com/newsqa/v1/query/pubished/daily/list?province=&city=

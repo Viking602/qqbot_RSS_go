@@ -45,3 +45,28 @@ func FishMan() []byte {
 	body, _ := ioutil.ReadAll(resp.Body)
 	return body
 }
+
+func TencentCovidSearch(province string, city string) []byte {
+	params := url.Values{}
+	Url, err := url.Parse("https://api.inews.qq.com/newsqa/v1/query/pubished/daily/list?")
+	if err != nil {
+		log.Errorf("发生异常:%v", err.Error())
+	}
+	params.Set("province", province)
+	params.Set("city", city)
+	Url.RawQuery = params.Encode()
+	urlPath := Url.String()
+	resp, respErr := http.Get(urlPath)
+	if respErr != nil {
+		log.Errorf("发生异常:%v", respErr)
+		return []byte(respErr.Error())
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Errorf("关闭连接时发生异常:%v", err)
+		}
+	}(resp.Body)
+	body, _ := ioutil.ReadAll(resp.Body)
+	return body
+}
