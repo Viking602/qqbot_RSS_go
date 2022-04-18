@@ -16,6 +16,10 @@ type MsgInfo struct {
 	Info string
 }
 
+type Owner struct {
+	OwnerUid int64
+}
+
 type RoomName struct {
 	RoomName string
 }
@@ -108,4 +112,13 @@ func GetRoomCode(botUid int64) []string {
 		result = append(result, string(dict))
 	}
 	return result
+}
+
+func GetBotOwner(botUid int64) int64 {
+	var msg Owner
+	err := db.DB.QueryRow("SELECT OwnerUid FROM `bot_info` WHERE BotUid = ?", botUid).Scan(&msg.OwnerUid)
+	if err != nil {
+		log.Error(err)
+	}
+	return msg.OwnerUid
 }

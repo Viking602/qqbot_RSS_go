@@ -12,6 +12,7 @@ import (
 	"qqbot-RSS-go/db"
 	"qqbot-RSS-go/modles/config"
 	"qqbot-RSS-go/modles/msg"
+	"qqbot-RSS-go/modles/query"
 	"qqbot-RSS-go/services"
 )
 
@@ -118,6 +119,26 @@ func socket(c *gin.Context) {
 				}
 				msgData := fmt.Sprintf("用户%v 离开了本群", groupDecrease.UserId)
 				bot.SendGroupMessageSocket(groupDecrease.GroupId, msgData, mt, ws, false)
+			}
+		case "request":
+			var requestData msg.RequestType
+			requestDataErr := json.Unmarshal(message, &requestData)
+			if requestDataErr != nil {
+				log.Errorf("序列化JSON异常:%v", dataErr)
+				break
+			}
+			requestType := requestData.RequestType
+			switch requestType {
+			case "friend":
+				msgData := fmt.Sprintf("收到好友请求:%v", requestData.UserId)
+				fmt.Println(msgData)
+				ownerId := query.GetBotOwner(requestData.SelfId)
+				bot.SendPrivateMsgSocket(ownerId, msgData, mt, ws)
+			case "group":
+				msgData := fmt.Sprintf("收到群邀请:%v", requestData.Flag)
+				fmt.Println(msgData)
+				ownerId := query.GetBotOwner(requestData.SelfId)
+				bot.SendPrivateMsgSocket(ownerId, msgData, mt, ws)
 			}
 		}
 		if cronType > 0 {

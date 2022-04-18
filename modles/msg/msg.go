@@ -688,6 +688,7 @@ type TencentCovidSearchMsg struct {
 	Info string `json:"info"`
 	Data []struct {
 		Year           int    `json:"year"`
+		Y              string `json:"y"`
 		Date           string `json:"date"`
 		Country        string `json:"country"`
 		Province       string `json:"province"`
@@ -710,3 +711,13 @@ type TencentCovidSearchMsg struct {
 }
 
 //https://api.inews.qq.com/newsqa/v1/query/pubished/daily/list?province=&city=
+
+type RequestType struct {
+	Comment     string `json:"comment"`
+	Flag        string `json:"flag"`
+	PostType    string `json:"post_type"`
+	RequestType string `json:"request_type"`
+	SelfId      int64  `json:"self_id"`
+	Time        int    `json:"time"`
+	UserId      int    `json:"user_id"`
+}

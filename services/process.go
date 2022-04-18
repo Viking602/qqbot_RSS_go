@@ -21,7 +21,7 @@ func GroupMsg(message string, groupId int, botUid int64, userId int, role string
 	startTime := time.Now()
 	msgInfo := strings.Split(message, " ")[0]
 	switch msgInfo {
-	case "rss-all":
+	case "#all":
 		groupData := query.Group(groupId, botUid)
 		liveGroupData := query.LiveGroup(groupId, botUid)
 		var urlInfo query.GroupUrl
@@ -41,11 +41,10 @@ func GroupMsg(message string, groupId int, botUid int64, userId int, role string
 	case "#ping":
 		msgData := fmt.Sprintf("%v", time.Since(startTime))
 		bot.SendGroupMessageSocket(groupId, msgData, mt, ws, false)
-	case "rss-help":
+	case "#help":
 		msgData := "帮助:\n" +
-			"rss-all\t查询本群订阅信息\n" +
-			"rss-about\t关于\n" +
-			"rss-status\t运行状态\n" +
+			"#all\t查询本群订阅信息\n" +
+			"#about\t关于\n" +
 			"添加订阅 RSS格式URL\t添加RSS订阅\n" +
 			"添加直播订阅 房间号(暂时仅支持B站)\t添加直播间订阅\n" +
 			"删除订阅 订阅名称\t删除RSS订阅\n" +

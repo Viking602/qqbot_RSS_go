@@ -8,7 +8,7 @@ import (
 )
 
 func SendGroupMessageSocket(groupId int, text string, mt int, ws *websocket.Conn, autoEscape bool) {
-	msg := []byte(fmt.Sprintf(`{"action":"send_group_msg","params":{"group_id":%v,"message":"%v"auto_escape":"%v"}}`, groupId, text, autoEscape))
+	msg := []byte(fmt.Sprintf(`{"action":"send_group_msg","params":{"group_id":%v,"message":"%v,"auto_escape":"%v"}}`, groupId, text, autoEscape))
 	err := ws.WriteMessage(mt, msg)
 	if err != nil {
 		log.Warnf("群聊消息发送失败%v", err.Error())
@@ -36,5 +36,14 @@ func SendMsgSocket(groupId int, text string, mt int, ws *websocket.Conn) {
 	err := ws.WriteMessage(mt, msg)
 	if err != nil {
 		log.Warnf("群聊消息发送失败%v", err.Error())
+	}
+}
+
+func SendPrivateMsgSocket(userId int64, message string, mt int, ws *websocket.Conn) {
+	msg := []byte(fmt.Sprintf(`{"action":"send_private_msg","params":{"user_id":%v,"message":%v}}`, userId, message))
+	fmt.Println(string(msg))
+	err := ws.WriteMessage(mt, msg)
+	if err != nil {
+		log.Warnf("私聊消息发送失败%v", err.Error())
 	}
 }
