@@ -87,11 +87,9 @@ func socket(c *gin.Context) {
 			case "heartbeat":
 				var botInfo msg.LiveEvent
 				UnErr := json.Unmarshal(message, &botInfo)
-				log.Infoln("Test")
 				if UnErr != nil {
 					log.Errorf("Error:%v", UnErr.Error())
 				}
-				log.Infoln("Test2")
 				go services.Rss(botInfo.SelfId, mt, ws)
 				go services.BilLive(botInfo.SelfId, ws, mt)
 			case "lifecycle":

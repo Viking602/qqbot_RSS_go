@@ -8,7 +8,7 @@ import (
 )
 
 func SendGroupMessageSocket(groupId int, text string, mt int, ws *websocket.Conn, autoEscape bool) {
-	msg := []byte(fmt.Sprintf(`{"action":"send_group_msg","params":{"group_id":%v,"message":"%v,"auto_escape":"%v"}}`, groupId, text, autoEscape))
+	msg := []byte(fmt.Sprintf(`{"action":"send_group_msg","params":{"group_id":%v,"message":"%v","auto_escape":"%v"}}`, groupId, text, autoEscape))
 	err := ws.WriteMessage(mt, msg)
 	if err != nil {
 		log.Warnf("群聊消息发送失败%v", err.Error())
