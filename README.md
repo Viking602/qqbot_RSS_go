@@ -1,6 +1,8 @@
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FViking602%2Fqqbot_RSS_go.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FViking602%2Fqqbot_RSS_go?ref=badge_large)
 
 # QQ订阅机器人
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FViking602%2Fqqbot_RSS_go.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FViking602%2Fqqbot_RSS_go?ref=badge_shield)
+
 
 ## 简介
 目前还是一个非常简陋的版本，部分功能还在开发中
@@ -110,3 +112,6 @@ rss-live 房间号(暂时仅支持B站)    添加直播间订阅
 rss-del 订阅名称    删除RSS订阅
 
 rss-live-del 房间号    删除直播订阅
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FViking602%2Fqqbot_RSS_go.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FViking602%2Fqqbot_RSS_go?ref=badge_large)
